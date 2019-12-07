@@ -29,6 +29,8 @@ window.onload = function() {
 
                     snapshot.docs.forEach(doc => {
                         if (doc.data().userID == idUser) {
+                            var curDay = new Date();
+                            var linhDay = new Date(doc.data().timenotification);
                             var des = doc.data().content;
                             var tit = doc.data().name;
                             var subTit = tit.slice(0, 30);
@@ -52,6 +54,7 @@ window.onload = function() {
                                 '</div>' +
                                 '<p class="p small ">Content:' + subDes + '</p>' +
                                 '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
+                                '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
 
                                 '<button type="button" class="btn btn-outline-success border border-warning" style="width:100px; margin:30px 88px"  >More</button>' +
                                 '</div>' +
@@ -93,7 +96,34 @@ window.onload = function() {
                             storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
                                 imgNote.src = url;
                             }).catch(function(error) {});
-                        }
+                            if(linhDay >= curDay ){
+                                $("#pills-doing").append(
+                                    '<div class="Toaster">'+
+                                            '<div class="Toaster-iconContainer">'+
+                                                '<div class="Toaster-icon Toaster-icon--success">'+
+                                                    '<i class="fa fa-check"></i>'+
+                                                '</div>'+
+                                            '</div>'+
+                                            '<div class="Toaster-messageContainer">'+
+                                                '<div class="Toaster-message">'+doc.data().name+'</div>'+
+                                            '</div>'+
+                                        '</div>'
+                                );
+                            }else if(linhDay < curDay ){
+                                $("#pills-done").append(
+                                    '<div class="Toaster">'+
+                                            '<div class="Toaster-iconContainer">'+
+                                                '<div class="Toaster-icon Toaster-icon--error">'+
+                                                    '<i class="fa fa-exclamation"></i>'+
+                                                '</div>'+
+                                            '</div>'+
+                                            '<div class="Toaster-messageContainer">'+
+                                                '<div class="Toaster-message">'+doc.data().name+'</div>'+
+                                            '</div>'+
+                                        '</div>'
+                                );
+                            }
+                        }  
                     });
 
                 });
@@ -326,14 +356,36 @@ function writeNotesData() {
     m = checkTime(m);
     timepost = MM + "/" + DD + "/" + YYYY + " " + h + ":" + m;
     var Note_timepost = new Date(timepost);
-    //alert(Note_timepost);
 
     var NewNotes_name_text = NewNotes_name.value;
     var NewNotes_location_text = NewNotes_location.value;
     var NewNotes_name_text_value = NewNotes_name_text.trim();
 
+    var dateExecute = document.getElementById("day_no").value;
+    var timeExecute = document.getElementById("time_no").value;
+    var dateTimeExecute = dateExecute + " " + timeExecute;
+    var Note_timeExecute = new Date(dateTimeExecute);
+
+    var DD2 = Note_timeExecute.getDate();
+    var MM2 = Note_timeExecute.getMonth() + 1;
+    var YYYY2 = Note_timeExecute.getFullYear();
+
+    var h2 = Note_timeExecute.getHours();
+    var m2 = Note_timeExecute.getMinutes();
+    DD2 = checkTime(DD2);
+    MM2 = checkTime(MM2);
+    YYYY2 = checkTime(YYYY2);
+
+    h2 = checkTime(h2);
+    m2 = checkTime(m2);
+    timepost2 = MM2 + "/" + DD2 + "/" + YYYY2 + " " + h2 + ":" + m2;
+
+    if(timepost2.includes("NaN")){
+        timepost2 = "";
+    }
+    alert(timepost2);
     if (NewNotes_name_text_value.length === 0 || NewNotes_name_text_value.length > 20) {
-        alert('Comments are required to continue!');
+        alert('Title are required to continue!');
     } else {
         var n = 0;
         db.collection('notelist').add({
@@ -341,7 +393,7 @@ function writeNotesData() {
                 location: document.getElementById("location_Name").value,
                 timepost: Note_timepost,
                 timepostShow: timepost,
-                // timenotification: document.getElementById("date_no").value,
+                timenotification: timepost2,
                 content: document.getElementById("NewNotes_content").value,
                 category: document.getElementById("ListNotes_category1").value,
                 userID: firebase.auth().currentUser.uid,
@@ -466,9 +518,9 @@ function uploadImg() {
 function search() {
     $('#listNotes').load('show_not.html');
     var tim = document.getElementById("search").value;
-    firebase.auth().onAuthStateChanged(function(user) {
+    console.log(tim);
+    firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
-
             var user = firebase.auth().currentUser;
 
             if (user != null) {
@@ -476,8 +528,8 @@ function search() {
                 // var listcategory = document.getElementById("ListNotes_category").value;
                 db.collection("notelist").orderBy("timepost", "desc").get().then(snapshot => {
                     snapshot.docs.forEach(doc => {
-
-                        if (doc.data().userID == idUser && doc.data().name == tim) {
+                        var tim2 = ""+(doc.data().name).toLowerCase();
+                        if (doc.data().userID == idUser && tim2.includes(tim.toLowerCase())) {
                             var des = doc.data().content;
                             var tit = doc.data().name;
                             var subTit = tit.slice(0, 30);
@@ -520,11 +572,9 @@ function search() {
                                 '</div>' +
                                 '<div class="modal-body">' +
                                 '<small><em>' + doc.data().timepostShow + '</em></small>' +
-                                '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
-                                // '<pre>' + doc.data().content + '</pre>' +
-
-                                '<textarea class="form-control" rows="7">' + doc.data().content + '</textarea>' +
-                                '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+                                '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small>' +
+                                '<input id="' + doc.id + 'Linhcontent" type="text" value ="' + doc.data().content + '"/input>' +
+                                '<img id="imgNote' + doc.data().name + '" style="width: 60% ; height: 100%; margin-left: 25%"></img>' +
 
                                 '</div>' +
                                 '<div class="modal-footer">' +
@@ -535,15 +585,15 @@ function search() {
                                 '</div>' +
                                 '</div>'
 
-
                             );
 
 
                             var imgNote = document.getElementById("imgNote" + doc.data().name);
-                            storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
+                            storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
                                 imgNote.src = url;
-                            }).catch(function(error) {});
-                        } else if (doc.data().userID == idUser && document.getElementById("search").value == "" && category_selected == "") {
+                            }).catch(function (error) { });
+                        }
+                        else if (doc.data().userID == idUser && document.getElementById("search").value == "" && category_selected == "") {
                             var des = doc.data().content;
                             var tit = doc.data().name;
                             var subTit = tit.slice(0, 30);
@@ -586,11 +636,9 @@ function search() {
                                 '</div>' +
                                 '<div class="modal-body">' +
                                 '<small><em>' + doc.data().timepostShow + '</em></small>' +
-                                '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
-                                // '<pre>' + doc.data().content + '</pre>' +
-
-                                '<textarea class="form-control" rows="7">' + doc.data().content + '</textarea>' +
-                                '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+                                '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small>' +
+                                '<input id="' + doc.id + 'Linhcontent" type="text" value ="' + doc.data().content + '"/input>' +
+                                '<img id="imgNote' + doc.data().name + '" style="width: 60% ; height: 100%; margin-left: 25%"></img>' +
 
                                 '</div>' +
                                 '<div class="modal-footer">' +
@@ -601,14 +649,13 @@ function search() {
                                 '</div>' +
                                 '</div>'
 
-
                             );
 
 
                             var imgNote = document.getElementById("imgNote" + doc.data().name);
-                            storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
+                            storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
                                 imgNote.src = url;
-                            }).catch(function(error) {});
+                            }).catch(function (error) { });
                         } else if (doc.data().userID == idUser && document.getElementById("search").value == "" && category_selected == doc.data().category) {
                             var des = doc.data().content;
                             var tit = doc.data().name;
@@ -652,11 +699,9 @@ function search() {
                                 '</div>' +
                                 '<div class="modal-body">' +
                                 '<small><em>' + doc.data().timepostShow + '</em></small>' +
-                                '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
-                                // '<pre>' + doc.data().content + '</pre>' +
-
-                                '<textarea class="form-control" rows="7">' + doc.data().content + '</textarea>' +
-                                '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+                                '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small>' +
+                                '<input id="' + doc.id + 'Linhcontent" type="text" value ="' + doc.data().content + '"/input>' +
+                                '<img id="imgNote' + doc.data().name + '" style="width: 60% ; height: 100%; margin-left: 25%"></img>' +
 
                                 '</div>' +
                                 '<div class="modal-footer">' +
@@ -667,14 +712,13 @@ function search() {
                                 '</div>' +
                                 '</div>'
 
-
                             );
 
 
                             var imgNote = document.getElementById("imgNote" + doc.data().name);
-                            storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
+                            storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
                                 imgNote.src = url;
-                            }).catch(function(error) {});
+                            }).catch(function (error) { });
                         }
                     });
                 });
