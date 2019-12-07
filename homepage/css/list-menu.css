@@ -1,0 +1,36 @@
+
+#Menu {
+    display: block;
+    font: 0.85em arial;
+    width: 315px;
+    clear: both;
+}
+
+#Menu ul {
+  padding: 0;
+  list-style-type: none;
+  text-align: center; /* set to left, center, or right to align the tabs as desired */
+}
+      
+#Menu ul li {
+  font-family:"Lucida Grande", "Lucida",Verdana,Arial,sans-serif;
+  font-size: 12px;
+  margin: 2px; /* height distance between tabs */
+}
+      
+#Menu ul li a {
+  display:block;
+  font-family: "Lucida Grande", "Lucida",Verdana,Arial,sans-serif;
+  font-size: 12px;
+  text-decoration: none; 
+  padding: 15px 15px; /* spacing around tab text, vertically and horizontally */
+  color: #FFFFFF;
+  background: #144e74; /* tab color */
+}
+
+#Menu ul li a:hover {
+  font-family: "Lucida Grande", "Lucida",Verdana,Arial,sans-serif;
+  font-size: 12px;
+  color: #FFFFFF;
+  background: #2d84af; /* tab hover color */
+}   
