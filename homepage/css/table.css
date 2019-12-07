@@ -1,0 +1,93 @@
+
+table {
+  text-align: left;  
+  width: 232px;
+}
+
+thead tr:first-child {
+  background: #ed1c40;
+  color: #fff;
+  border: none;
+}
+
+th:first-child,
+td:first-child {
+
+}
+
+th {
+  font-weight: 500;
+}
+
+thead tr:last-child th {
+  border-bottom: 3px solid #ddd;
+}
+
+td:last-child {
+  text-align: right;
+  padding-right: 10px;
+}
+
+.button {
+  
+  cursor: pointer;
+  
+}
+
+
+
+.khung{
+
+  width: 212px;
+  margin-left: -25px;
+  height: 30px;
+  overflow: hidden;
+
+}
+.inputcategory{
+
+  width: 300px;
+  height: 100%;
+  float: left;
+  transition-duration: 0.25s;
+  background-color: rgba(255, 255, 255, 0.4);
+  
+}
+.editcategory{
+  float: left;
+  margin-left: 8px;
+  margin-top: 5px;
+}
+.deletecategory{
+  float: left;
+  margin-left: 5px;
+  margin-top: 5px;
+}
+
+.khung:hover .inputcategory{
+  width: 151px;
+}
+
+.edit:hover {
+  color: #0a79df;
+}
+
+.delete:hover {
+  color: #dc2a2a;
+}
+
+.inputcategory:focus {
+  background-color: white;
+  width: 151px;
+  color: #000000;
+}
+
+.inputcategory:hover .inputcategory{
+  background-color: rgba(255, 255, 255, 0.4);
+  
+}
+.inputcategory:focus {
+  background-color: white;
+  width: 180px;
+  color: #000000;
+}

@@ -1,0 +1,111 @@
+.add_note{
+    position: fixed;
+    top: auto;
+    left: auto;
+    right: 77px;
+    bottom: 15px;
+    font-size: 32px;
+    opacity: 0.8;
+    z-index: 9999;
+    cursor: pointer;
+}
+
+  .add_note:hover {
+  opacity: 1;
+  }
+
+  .add_task{
+    position: fixed;
+    top: auto;
+    left: auto;
+    right: 138px;
+    bottom: 15px;
+    font-size: 32px;
+    opacity: 0.8;
+    z-index: 9999;
+    cursor: pointer;
+}
+
+  .add_task:hover {
+  opacity: 1;
+  }
+
+
+  /* back to top */
+  .back-to-top {
+    position: fixed;
+    top: auto;
+    left: auto;
+    right: 15px;
+    bottom: 15px;
+    font-size: 32px;
+    opacity: 0.8;
+    z-index: 9999;
+    cursor: pointer;
+  }
+  .back-to-top:hover {
+  opacity: 1;
+  }
+
+  .btn-size-add-del{
+    width: 50px;
+    height: 50px;
+  }
+
+
+  
+.location-form{
+
+  width: 212px;
+  margin-left: -25px;
+  height: 30px;
+  overflow: hidden;
+
+}
+.inputlocation{
+
+  width: 300px;
+  height: 100%;
+  float: left;
+  transition-duration: 0.25s;
+  background-color: rgba(255, 255, 255, 0.4);
+  
+}
+.editcategory{
+  float: left;
+  margin-left: 8px;
+  margin-top: 5px;
+}
+.addlocation{
+  float: left;
+  margin-left: 5px;
+  margin-top: 5px;
+}
+
+.location-form:hover .inputlocation{
+  width: 151px;
+}
+
+.edit:hover {
+  color: #0a79df;
+}
+
+.delete:hover {
+  color: #dc2a2a;
+}
+
+.inputlocation:focus {
+  background-color: white;
+  width: 151px;
+  color: #000000;
+}
+
+.inputlocation:hover .inputlocation{
+  background-color: rgba(255, 255, 255, 0.4);
+  
+}
+.inputlocation:focus {
+  background-color: white;
+  width: 180px;
+  color: #000000;
+}

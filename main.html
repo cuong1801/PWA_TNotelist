@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>T-NoteList</title>
+
+    <link href='https://fonts.googleapis.com/css?family=Titillium+Web:400,300,600' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+    <!-- <link rel="stylesheet" href="assets/css/Login.css"> -->
+    <link href="https://fonts.googleapis.com/css?family=PT+Serif&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Indie+Flower|PT+Serif&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Indie+Flower|PT+Serif|Shadows+Into+Light&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Indie+Flower|PT+Serif|Satisfy|Shadows+Into+Light&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+
+    <link rel="stylesheet" href="assets\css\index1.css" />
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/css/bootstrap.css'>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" href="assets/css/PWA-NotesList-calendar.css">
+    <link rel="stylesheet" href="homepage/css/table.css">
+    <link rel="manifest" href="/manifest.json">
+    <!-- <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'> -->
+
+    <link rel="manifest" href="/manifest.json">
+    <!-- ios support -->
+    <link rel="manifest" href="/assets/img/icons">
+    <meta name="apple-mobile-web-app-status-bar" content="#aa7700">
+    <meta name="theme-color" content="#FFE1C4">
+
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js'></script>
+
+</head>
+
+<body class="" style="font-family: 'Oswald', sans-serif;">
+    <nav class="menu" tabindex="0">
+        <div class="smartphone-menu-trigger"></div>
+        <header class="avatar">
+            <img alt="User Pic" src="https://x1.xingassets.com/assets/frontend_minified/img/users/nobody_m.original.jpg" id="profile-image1">
+            <h2 id="full_Name"></h2>
+            <!-- <h4 style="color:#00b1b1;" ></h4></span> -->
+        </header>
+        <ul>
+            <!-- <li tabindex="0"><input type="text" value=""></input></li> -->
+            <li tabindex="0" class="icon-category" onclick="ListNotes()"><span>List Note</span></li>
+            <li tabindex="0" class="icon-customers"><span>Customers</span></li>
+            <li tabindex="0" class="icon-users" onclick="openProfile()"><span>Users</span></li>
+            <li tabindex="0" id="open_profile" class="icon-settings" onclick="Notificationshow(this)">
+                <span>Notification</span></li>
+            <li tabindex="0" class="icon-logout" onclick="logout()"><span>logout</span></li>
+
+        </ul>
+    </nav>
+    <!-- add note -->
+    <div class="modal" id="myModal">
+        <div class="modal-dialog  modal-lg">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Add new note</h4>
+                </div>
+
+                <!-- Modal body -->
+                <hr>
+
+                <!-- form thêm ghi chú mới-->
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <input id="NewNotes_name" type="Title" class="form-control" id="tenghichu" placeholder="Title">
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-md-8">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="sidebar-menu">
+                                        <div class="sidebar-submenu">
+                                            <ul id="categoryList" class="show_category ">
+                                                <!-- <a>Tuần</a> -->
+                                                <div class="location-form">
+                                                    <div class="inputlocation">
+                                                        <input id="location_Name" class="input1" type="text" placeholder="add new location" aria-label="add new location" aria-describedby="button-addon2">
+                                                    </div>
+                                                    <div class="addlocation">
+                                                        <i class="material-icons button " onclick="">house</i>
+                                                    </div>
+                                                </div>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                </div>
+                <textarea id="NewNotes_content" type="ghichu" name="message" placeholder="What are you doing..." style="width:auto; height:auto;"></textarea>
+                <br>
+                <div class="custom-file">
+                    <input type="file" value="upload" id="fileButton" />
+                </div>
+                <br>
+                <div class="form-row row">
+                    <div class="form-group col-md-4">
+                        <label class="text-category" for="danhmuc">Category</label>
+                        <select id="ListNotes_category1" class="form-control cursor form-select select-category" style="height: calc(3.25rem + 2px);">
+                            <option selected>No Categories</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-8">
+                        <div class="form-check">
+                            <input class="" type="checkbox" id="NewNotes_checkTime">
+                            <label for="thongbao">Notification</label>
+                            <div id="notification" class="row" style="display: none;">
+                                <div class="col-md-6">
+                                    <input id="day_no" type="date" class="form-control " name="bday">
+                                </div>
+                                <div class="col-md-4">
+                                    <input id="time_no" type="time" class="form-control " name="bday">
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+
+
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button onclick="writeNotesData()" type="button" style="width: 70px;height: 50px;" class="btn btn-outline-info">Add</button>
+                    <button type="button" style="width: 70px;height: 50px;" class="btn btn-outline-info" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- end add note -->
+
+
+    <!--User Profile modal-->
+    <div class="modal" id="userProfileModal">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-7 ">
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4>User Profile</h4>
+                        </div>
+                        <div class="panel-body">
+
+                            <div class="box box-info">
+
+                                <div class="box-body">
+                                    <div class="col-sm-6">
+                                        <div>
+
+                                            <img alt="User Pic" onclick="uploadImg()" src="https://x1.xingassets.com/assets/frontend_minified/img/users/nobody_m.original.jpg" id="profile-image1" class="img-circle img-responsive">
+                                            <input id="profile-image-upload" class="hidden" type="file">
+                                            <label for="profile-image-upload" style="color:#999;">click here to change
+                                                profile image</label>
+                                            <!--Upload Image Js And Css-->
+
+                                        </div>
+
+                                        <br>
+
+                                        <!-- /input-group -->
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <h4 style="color:#00b1b1;" id="full_Name"></h4>
+                                        </span>
+                                        <span>
+                                            <p id="national"></p>
+                                        </span>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                    <hr style="margin:5px 0 5px 0;">
+                                    <div class="col-sm-5 col-xs-6 tital ">First Name:</div><input id="first_Name" class="col-sm-7 col-xs-6 " placeholder="First Name">
+                                    <div class="clearfix"></div>
+                                    <div class="bot-border"></div>
+                                    <div class="col-sm-5 col-xs-6 tital ">Last Name:</div><input id="last_Name" class="col-sm-7 col-xs-6 " placeholder="Last Name">
+                                    <div class="clearfix"></div>
+                                    <div class="bot-border"></div>
+                                    <div class="col-sm-5 col-xs-6 tital ">Date Of Birth:</div><input class="col-sm-7 col-xs-6 " placeholder="Date Of Birth">
+                                    <div class="clearfix"></div>
+                                    <div class="bot-border"></div>
+                                    <div class="col-sm-5 col-xs-6 tital ">Nationality:</div><input id="nationality" class="col-sm-7 col-xs-6 " placeholder="Nationality">
+                                    <div class="clearfix"></div>
+                                    <div class="bot-border"></div>
+
+                                    <div class="col-sm-5 col-xs-6 tital ">Time Zone:</div>
+                                    <select name="DropDownTimezone" id="DropDownTimezone" class="col-sm-7 col-xs-6 ">
+                                        <option value="-12.0">(GMT -12:00) Eniwetok, Kwajalein</option>
+                                        <option value="-11.0">(GMT -11:00) Midway Island, Samoa</option>
+                                        <option value="-10.0">(GMT -10:00) Hawaii</option>
+                                        <option value="-9.0">(GMT -9:00) Alaska</option>
+                                        <option value="-8.0">(GMT -8:00) Pacific Time (US & Canada)</option>
+                                        <option value="-7.0">(GMT -7:00) Mountain Time (US & Canada)</option>
+                                        <option value="-6.0">(GMT -6:00) Central Time (US & Canada), Mexico City
+                                        </option>
+                                        <option value="-5.0">(GMT -5:00) Eastern Time (US & Canada), Bogota, Lima
+                                        </option>
+                                        <option value="-4.0">(GMT -4:00) Atlantic Time (Canada), Caracas, La Paz
+                                        </option>
+                                        <option value="-3.5">(GMT -3:30) Newfoundland</option>
+                                        <option value="-3.0">(GMT -3:00) Brazil, Buenos Aires, Georgetown</option>
+                                        <option value="-2.0">(GMT -2:00) Mid-Atlantic</option>
+                                        <option value="-1.0">(GMT -1:00 hour) Azores, Cape Verde Islands</option>
+                                        <option value="0.0">(GMT) Western Europe Time, London, Lisbon, Casablanca
+                                        </option>
+                                        <option value="1.0">(GMT +1:00 hour) Brussels, Copenhagen, Madrid, Paris
+                                        </option>
+                                        <option value="2.0">(GMT +2:00) Kaliningrad, South Africa</option>
+                                        <option value="3.0">(GMT +3:00) Baghdad, Riyadh, Moscow, St. Petersburg</option>
+                                        <option value="3.5">(GMT +3:30) Tehran</option>
+                                        <option value="4.0">(GMT +4:00) Abu Dhabi, Muscat, Baku, Tbilisi</option>
+                                        <option value="4.5">(GMT +4:30) Kabul</option>
+                                        <option value="5.0">(GMT +5:00) Ekaterinburg, Islamabad, Karachi, Tashkent
+                                        </option>
+                                        <option value="5.5">(GMT +5:30) Bombay, Calcutta, Madras, New Delhi</option>
+                                        <option value="5.75">(GMT +5:45) Kathmandu</option>
+                                        <option value="6.0">(GMT +6:00) Almaty, Dhaka, Colombo</option>
+                                        <option selected="selected" value="7.0">(GMT +7:00) Bangkok, Hanoi, Jakarta
+                                        </option>
+                                        <option value="8.0">(GMT +8:00) Beijing, Perth, Singapore, Hong Kong</option>
+                                        <option value="9.0">(GMT +9:00) Tokyo, Seoul, Osaka, Sapporo, Yakutsk</option>
+                                        <option value="9.5">(GMT +9:30) Adelaide, Darwin</option>
+                                        <option value="10.0">(GMT +10:00) Eastern Australia, Guam, Vladivostok</option>
+                                        <option value="11.0">(GMT +11:00) Magadan, Solomon Islands, New Caledonia
+                                        </option>
+                                        <option value="12.0">(GMT +12:00) Auckland, Wellington, Fiji, Kamchatka</option>
+                                    </select>
+                                    <div class="clearfix"></div>
+                                    <div class="bot-border"></div>
+                                    <div class="col-sm-2 col-xs-2 tital">
+                                        <button onclick="saveIn()" class="btn btn-primary" data-dismiss="modal">Update</button>
+                                    </div>
+                                    <div class="col-sm-2 col-xs-2 tital">
+                                        <button class="btn btn-primary" data-dismiss="modal">Close</button>
+                                    </div>
+                                    <!-- /.box-body -->
+                                </div>
+                                <!-- /.box -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- sidebar-wrapper  -->
+    <main class="page-content">
+        <div class="container-fluid">
+            <h2 class="title-align tracking-in-expand ">T-NoteList</h2>
+            <hr>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group col-md-12" style="font-size: 18; font-family: 'Yeon Sung', cursive;">
+                                <p>Là nơi giúp bạn lưu lại những ghi chú nhiệm vụ hằng ngày</p>
+                                <p> Bạn là một sinh viên, bạn đã đi làm, bạn thường hay quên những thứ hằng ngày. Chúng tôi sẽ giúp bạn
+                                    <!-- Danh sách các nhiệm vụ mới nhất-->
+                                    <h5>Nhiệm vụ gần đây</h5>
+                                    <h6 id=aaa></h6>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="sidebar-menu">
+                                <div class="sidebar-submenu">
+                                    <ul id="categoryList" class="show_category ">
+                                        <!-- <a>Tuần</a> -->
+                                        <div class="khung">
+                                            <div class="inputcategory">
+                                                <input id="category_Name" class="input1" type="text" placeholder="add new category" aria-label="addnewcategory" aria-describedby="button-addon2">
+                                            </div>
+                                            <div class="editcategory">
+                                                <i class="material-icons button" onclick="addnewcategory()">add_box</i>
+                                            </div>
+                                            <div class="deletecategory">
+                                                <i class="material-icons button " onclick="deleteCategory()">delete_outline</i>
+                                            </div>
+                                        </div>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label class="text-category" for="danhmuc">Category</label>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div>
+                                            <select id="ListNotes_category" class="form-control cursor form-select select-category" style="height: calc(3.25rem + 2px);" onchange="Category_select(this)">
+                                                <option selected>No Categories</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 select-category-del">
+                                        <i class="material-icons button icondeleteslect" onclick="deleteCategoryInSelect()">delete_outline</i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <input id="search" type="search" onkeyup="search()" placeholder="Search"></input>
+                        </div>
+                        <div class="col-md-4" style=" display: flex; align-items: center; justify-content: center;">
+                            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link " id="pills-done-tab" data-toggle="pill" href="#pills-done" role="tab" aria-controls="pills-done" aria-selected="true">Done</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="pills-doing-tab" data-toggle="pill" href="#pills-doing" role="tab" aria-controls="pills-doing" aria-selected="false">Doing</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class=" col-md-8">
+
+                            <div id="listNotes">
+                            </div>
+                        </div>
+                        <div class=" col-md-4">
+                            <div class=" col-md-10">
+
+                                <div class="tab-content" id="pills-tabContent" style="margin-top: 12px;">
+                                    <div class="tab-pane fade  " id="pills-done" role="tabpanel" aria-labelledby="pills-done-tab">
+                                        <div class="Toaster">
+                                            <div class="Toaster-iconContainer">
+                                                <div class="Toaster-icon Toaster-icon--error">
+                                                    <i class="fa fa-exclamation"></i>
+                                                </div>
+                                            </div>
+                                            <div class="Toaster-messageContainer">
+                                                <div class="Toaster-message">Error Toaster</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade show active" id="pills-doing" role="tabpanel" aria-labelledby="pills-doing-tab">
+                                        <div class="Toaster">
+                                            <div class="Toaster-iconContainer">
+                                                <div class="Toaster-icon Toaster-icon--success">
+                                                    <i class="fa fa-check"></i>
+                                                </div>
+                                            </div>
+                                            <div class="Toaster-messageContainer">
+                                                <div class="Toaster-message">Success Toaster</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </main>
+    <!-- page-content" -->
+    </div>
+    <!-- page-wrapper -->
+    <div class=" row ">
+        <div class="col-md-2">
+            <div data-toggle="tooltip" data-placement="left" id="back-to-top" class="back-to-top">
+                <!--button trở về đầu trang-->
+                <button class="btn btn-info btn-size-add-del material-icons">keyboard_arrow_up</button>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div data-toggle="tooltip" data-placement="left" id="add" class="add_note">
+                <!--button add new post-->
+                <button class="btn btn-info btn-size-add-del material-icons" data-toggle="modal" data-target="#myModal">post_add</button>
+            </div>
+        </div>
+    </div>
+    <!-- </div> -->
+    <!-- <script src="https://www.gstatic.com/firebasejs/6.4.2/firebase-app.js"></script> -->
+    <script src="https://www.gstatic.com/firebasejs/7.1.0/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.1.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.1.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.1.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.1.0/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.1.0/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.1.0/firebase-messaging.js"></script>
+    <script>
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyD17r7mphJ8Vh_rXYHG8WAHgnTfCa2RgaE",
+            authDomain: "t-notelist.firebaseapp.com",
+            databaseURL: "https://t-notelist.firebaseio.com",
+            projectId: "t-notelist",
+            storageBucket: "t-notelist.appspot.com",
+            messagingSenderId: "135435269388",
+            appId: "1:135435269388:web:768027188dd226fd79c529"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
+    <!-- <script src="https://www.gstatic.com/firebase/init.js"></script> -->
+    <!-- <script src="/app.js"></script> -->
+    <script src="/db.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="login-register-master/signin.js"></script>
+    <script src="login-register-master/notUser.js"></script>
+    <script src="assets/js/index1.js"></script>
+    <script src="Nhiemvu/shownote_category.js"></script>
+    <link rel="stylesheet" href="homepage/css/background.css">
+    <link rel="stylesheet" href="homepage/css/show-category.css">
+    <link rel="stylesheet" href="homepage/css/add-note.css">
+    <link rel="stylesheet" href="task/task.css">
+    <link rel="stylesheet" href="homepage/css/ShowNoteCard.css">
+    <link rel="stylesheet" href="homepage/css/slogan.css">
+    <link rel="stylesheet" href="homepage/css/detailCard.css">
+    <link rel="stylesheet" href="homepage/css/search.css">
+    <!-- <link rel="stylesheet" href="assets/css/menu.css"> -->
+    <script src="assets/js/menu.js"></script>
+    <script src="assets/moment.js"></script>
+    <script src="assets/moment-with-locales.js"></script>
+    <script src="NewNote/js/alarm.js"></script>
+    <script src="task/task.js"></script>
+    <script src="homepage/js/ShowNoteCard.js"></script>
+    <script src="homepage/js/list-menu.js"></script>
+    <!-- <script src="app.js"></script> -->
+</body>
+
+</html>
