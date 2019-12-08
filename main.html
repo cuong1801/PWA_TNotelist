@@ -300,60 +300,49 @@
                                     </ul>
                                 </div>
                             </div>
-                            <div class="form-group ">
-                                <label class="text-category" for="danhmuc">Category</label>
-                                <br>
-                                <div class="row">
-                                    <div class="col-md-8">
-                                        <div>
-                                            <select id="ListNotes_category" class="form-control cursor form-select select-category" style="height: calc(3.25rem + 2px);" onchange="Category_select(this)">
-                                                <option selected>No Categories</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2 select-category-del">
-                                        <i class="material-icons button icondeleteslect" onclick="deleteCategoryInSelect()">delete_outline</i>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                         <hr>
                     </div>
                     <hr>
                     <div class="row">
-                        <div class="col-md-8">
+                        <div class="col-md-6">
                             <input id="search" type="search" onkeyup="search()" placeholder="Search"></input>
                         </div>
-                        <div class="col-md-4" style=" display: flex; align-items: center; justify-content: center;">
+                        <div class="col-md-6" style=" display: flex; align-items: center; justify-content: center;">
                             <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                                 <li class="nav-item">
                                     <a class="nav-link " id="pills-done-tab" data-toggle="pill" href="#pills-done" role="tab" aria-controls="pills-done" aria-selected="true">Done</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link active" id="pills-doing-tab" data-toggle="pill" href="#pills-doing" role="tab" aria-controls="pills-doing" aria-selected="false">Doing</a>
+                                    <select id="ListNotes_category" class="form-control cursor form-select select-category" style="height: calc(3.6rem + 2px);" onchange="Category_select(this)">
+                                        <option selected>No Categories</option>
+                                    </select>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link " id="pills-doing-tab" data-toggle="pill" href="#pills-doing" role="tab" aria-controls="pills-doing" aria-selected="false">Doing</a>
                                 </li>
                             </ul>
                         </div>
                     </div>
                     <div class="row">
-                        <div class=" col-md-8">
+                        <div class="col-md-12">
 
                             <div id="listNotes">
                             </div>
                         </div>
-                        <div class=" col-md-4">
+                        <!-- <div class=" col-md-4">
                             <div class=" col-md-10">
 
                                 <div class="tab-content" id="pills-tabContent">
                                     <div class="tab-pane fade  " id="pills-done" role="tabpanel" aria-labelledby="pills-done-tab">
-                                        
+
                                     </div>
                                     <div class="tab-pane fade show active" id="pills-doing" role="tabpanel" aria-labelledby="pills-doing-tab">
-                                        
+
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
