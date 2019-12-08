@@ -56,6 +56,7 @@ window.onload = function() {
                                 '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
                                 '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
 
+                                '<button type="button" class="btn btn-outline-success border border-warning" style="width:100px; margin:30px 88px"  >More</button>' +
                                 '</div>' +
 
                                 '</a>' +
@@ -95,34 +96,34 @@ window.onload = function() {
                             storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
                                 imgNote.src = url;
                             }).catch(function(error) {});
-                            if (linhDay >= curDay) {
+                            if(linhDay >= curDay ){
                                 $("#pills-doing").append(
-                                    '<div class="Toaster">' +
-                                    '<div class="Toaster-iconContainer">' +
-                                    '<div class="Toaster-icon Toaster-icon--success">' +
-                                    '<i class="fa fa-check"></i>' +
-                                    '</div>' +
-                                    '</div>' +
-                                    '<div class="Toaster-messageContainer">' +
-                                    '<div class="Toaster-message">' + doc.data().name + '</div>' +
-                                    '</div>' +
-                                    '</div>'
+                                    '<div class="Toaster">'+
+                                            '<div class="Toaster-iconContainer">'+
+                                                '<div class="Toaster-icon Toaster-icon--success">'+
+                                                    '<i class="fa fa-check"></i>'+
+                                                '</div>'+
+                                            '</div>'+
+                                            '<div class="Toaster-messageContainer">'+
+                                                '<div class="Toaster-message">'+doc.data().name+'</div>'+
+                                            '</div>'+
+                                        '</div>'
                                 );
-                            } else if (linhDay < curDay) {
+                            }else if(linhDay < curDay ){
                                 $("#pills-done").append(
-                                    '<div class="Toaster">' +
-                                    '<div class="Toaster-iconContainer">' +
-                                    '<div class="Toaster-icon Toaster-icon--error">' +
-                                    '<i class="fa fa-exclamation"></i>' +
-                                    '</div>' +
-                                    '</div>' +
-                                    '<div class="Toaster-messageContainer">' +
-                                    '<div class="Toaster-message">' + doc.data().name + '</div>' +
-                                    '</div>' +
-                                    '</div>'
+                                    '<div class="Toaster">'+
+                                            '<div class="Toaster-iconContainer">'+
+                                                '<div class="Toaster-icon Toaster-icon--error">'+
+                                                    '<i class="fa fa-exclamation"></i>'+
+                                                '</div>'+
+                                            '</div>'+
+                                            '<div class="Toaster-messageContainer">'+
+                                                '<div class="Toaster-message">'+doc.data().name+'</div>'+
+                                            '</div>'+
+                                        '</div>'
                                 );
                             }
-                        }
+                        }  
                     });
 
                 });
@@ -185,7 +186,10 @@ function Category_select(category) {
                                         '</div>' +
                                         '<p class="p small ">Content:' + subDes + '</p>' +
                                         '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
+
+                                        '<button type="button" class="btn btn-outline-success border border-warning" style="width:100px; margin:30px 88px"  >More</button>' +
                                         '</div>' +
+
                                         '</a>' +
 
                                         '<div class="modal fade" id="exampleModalScrollable' + doc.id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">' +
@@ -252,7 +256,6 @@ function addnewcategory() {
             userID: idUser
         })
         alert("Add to category");
-        category_Name.value = '';
     }
 }
 
@@ -264,12 +267,21 @@ function deleteCategory() {
         alert('Comments are required to continue!');
 
     } else {
-        if (confirm('You want to delete category?')) {
-            db.collection("category").doc(document.getElementById("category_Name").value + firebase.auth().currentUser.uid).delete();
-        } else {}
-        category_Name.value = '';
+        db.collection("category").doc(document.getElementById("category_Name").value + firebase.auth().currentUser.uid).delete();
     }
 }
+
+// function deleteCategoryInSelect() {
+//   // var result = confirm("Do you want to continue?");
+//   // if(result)  {
+//   // alert("OK Next lesson!");
+//   db.collection("category").doc(document.getElementById("ListNotes_category1").value + firebase.auth().currentUser.uid).delete();
+//   // location.reload();
+//   // } else {
+//   // alert("Bye!");
+//   // }
+
+// }
 
 function checkTime(i) {
     if (i < 10) {
@@ -284,6 +296,7 @@ document.getElementById('NewNotes_checkTime').onclick = function(e) {
     } else {
         document.getElementById('notification').style.display = 'none';
     }
+
 };
 
 function save(id) {
@@ -367,7 +380,7 @@ function writeNotesData() {
     m2 = checkTime(m2);
     timepost2 = MM2 + "/" + DD2 + "/" + YYYY2 + " " + h2 + ":" + m2;
 
-    if (timepost2.includes("NaN")) {
+    if(timepost2.includes("NaN")){
         timepost2 = "";
     }
     alert(timepost2);
@@ -506,7 +519,7 @@ function search() {
     $('#listNotes').load('show_not.html');
     var tim = document.getElementById("search").value;
     console.log(tim);
-    firebase.auth().onAuthStateChanged(function(user) {
+    firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
             var user = firebase.auth().currentUser;
 
@@ -515,7 +528,7 @@ function search() {
                 // var listcategory = document.getElementById("ListNotes_category").value;
                 db.collection("notelist").orderBy("timepost", "desc").get().then(snapshot => {
                     snapshot.docs.forEach(doc => {
-                        var tim2 = "" + (doc.data().name).toLowerCase();
+                        var tim2 = ""+(doc.data().name).toLowerCase();
                         if (doc.data().userID == idUser && tim2.includes(tim.toLowerCase())) {
                             var des = doc.data().content;
                             var tit = doc.data().name;
@@ -540,6 +553,8 @@ function search() {
                                 '</div>' +
                                 '<p class="p small ">Content:' + subDes + '</p>' +
                                 '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
+
+                                '<button type="button" class="btn btn-outline-success border border-warning" style="width:100px; margin:30px 88px"  >More</button>' +
                                 '</div>' +
 
                                 '</a>' +
@@ -574,10 +589,11 @@ function search() {
 
 
                             var imgNote = document.getElementById("imgNote" + doc.data().name);
-                            storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
+                            storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
                                 imgNote.src = url;
-                            }).catch(function(error) {});
-                        } else if (doc.data().userID == idUser && document.getElementById("search").value == "" && category_selected == "") {
+                            }).catch(function (error) { });
+                        }
+                        else if (doc.data().userID == idUser && document.getElementById("search").value == "" && category_selected == "") {
                             var des = doc.data().content;
                             var tit = doc.data().name;
                             var subTit = tit.slice(0, 30);
@@ -601,6 +617,8 @@ function search() {
                                 '</div>' +
                                 '<p class="p small ">Content:' + subDes + '</p>' +
                                 '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
+
+                                '<button type="button" class="btn btn-outline-success border border-warning" style="width:100px; margin:30px 88px"  >More</button>' +
                                 '</div>' +
 
                                 '</a>' +
@@ -635,9 +653,9 @@ function search() {
 
 
                             var imgNote = document.getElementById("imgNote" + doc.data().name);
-                            storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
+                            storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
                                 imgNote.src = url;
-                            }).catch(function(error) {});
+                            }).catch(function (error) { });
                         } else if (doc.data().userID == idUser && document.getElementById("search").value == "" && category_selected == doc.data().category) {
                             var des = doc.data().content;
                             var tit = doc.data().name;
@@ -662,6 +680,8 @@ function search() {
                                 '</div>' +
                                 '<p class="p small ">Content:' + subDes + '</p>' +
                                 '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
+
+                                '<button type="button" class="btn btn-outline-success border border-warning" style="width:100px; margin:30px 88px"  >More</button>' +
                                 '</div>' +
 
                                 '</a>' +
@@ -696,9 +716,9 @@ function search() {
 
 
                             var imgNote = document.getElementById("imgNote" + doc.data().name);
-                            storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
+                            storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
                                 imgNote.src = url;
-                            }).catch(function(error) {});
+                            }).catch(function (error) { });
                         }
                     });
                 });

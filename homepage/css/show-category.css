@@ -1,18 +1,16 @@
-.select-category {
+.select-category{
     height: calc(3.25rem + 2px);
-    width: 144px;
+    width: 212px;
+    margin-left: 15px;
 }
-
-.select-category-del {
+.select-category-del{
     align-self: center;
     margin-left: -56px;
     margin-top: 5px;
 }
-
-.text-category {
+.text-category{
     margin-left: 15px;
 }
-
-.title-align {
+.title-align{
     text-align: center;
 }
