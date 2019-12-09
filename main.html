@@ -311,7 +311,7 @@
                         <div class="col-md-6" style=" display: flex; align-items: center; justify-content: center;">
                             <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                                 <li class="nav-item">
-                                    <a class="nav-link " id="pills-done-tab" data-toggle="pill" href="#pills-done" role="tab" aria-controls="pills-done" aria-selected="true">Done</a>
+                                    <a class="nav-link " id="pills-done-tab" data-toggle="pill" href="#pills-done" role="tab" aria-controls="pills-done" aria-selected="false" onclick="done()">Done</a>
                                 </li>
                                 <li class="nav-item">
                                     <select id="ListNotes_category" class="form-control cursor form-select select-category" style="height: calc(3.6rem + 2px);" onchange="Category_select(this)">
@@ -319,7 +319,7 @@
                                     </select>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link " id="pills-doing-tab" data-toggle="pill" href="#pills-doing" role="tab" aria-controls="pills-doing" aria-selected="false">Doing</a>
+                                    <a class="nav-link " id="pills-doing-tab" data-toggle="pill" href="#pills-doing" role="tab" aria-controls="pills-doing" aria-selected="false" onclick="doing()">Doing</a>
                                 </li>
                             </ul>
                         </div>
