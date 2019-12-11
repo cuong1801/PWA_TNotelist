@@ -24,11 +24,39 @@ window.onload = function () {
 
             if (user != null) {
                 var idUser = firebase.auth().currentUser.uid;
+                var docRef = db.collection('users').doc(idUser);
+                docRef.get().then(function (doc) {
+
+                    if (doc.exists) {
+                        console.log("Document user profile:", doc.data());
+                        $('#first_Name').val(doc.data().firstName);
+                        $('#last_Name').val(doc.data().lastName);
+                        $('#nationality').val(doc.data().nationality);
+                        $('#national').text(doc.data().nationality);
+                        $('#full_Name').text((doc.data().firstName) + " " + (doc.data().lastName));
+                        $('#DropDownTimezone').val(doc.data().timeZone);
+
+                        var imgProfile = document.getElementById("profile-image1");
+                        storageRef.child('userImage/' + doc.data().temp).getDownloadURL().then(function (url) {
+                            imgProfile.src = url;
+                        }).catch(function (error) {
+                            // Handle any errors
+                        });
+
+                    } else {
+                        // doc.data() will be undefined in this case
+                        console.log("No such document!");
+                    }
+                }).catch(function (error) {
+                    console.log("Error getting document:", error);
+                    alert(error);
+                });
                 // var listcategory = document.getElementById("ListNotes_category").value;
                 db.collection("notelist").orderBy("timepost", "desc").get().then(snapshot => {
 
                     snapshot.docs.forEach(doc => {
                         if (doc.data().userID == idUser) {
+
                             var des = doc.data().content;
                             var tit = doc.data().name;
                             var subTit = tit.slice(0, 30);
@@ -728,6 +756,7 @@ userImg.addEventListener('change', function (e) {
 function saveIn() {
 
     var idUser = firebase.auth().currentUser.uid;
+    var docRef = db.collection('users').doc(idUser);
     var firstName = document.getElementById("first_Name").value;
     var lastName = document.getElementById("last_Name").value;
     var nationality = document.getElementById("nationality").value;
@@ -740,6 +769,33 @@ function saveIn() {
         timeZone: timeZone,
         temp: tempProfile
     })
+    docRef.get().then(function (doc) {
+
+        if (doc.exists) {
+            console.log("Document user profile:", doc.data());
+            $('#first_Name').val(doc.data().firstName);
+            $('#last_Name').val(doc.data().lastName);
+            $('#nationality').val(doc.data().nationality);
+            $('#national').text(doc.data().nationality);
+            $('#full_Name').text((doc.data().firstName) + " " + (doc.data().lastName));
+            $('#DropDownTimezone').val(doc.data().timeZone);
+
+            var imgProfile = document.getElementById("profile-image1");
+            storageRef.child('userImage/' + doc.data().temp).getDownloadURL().then(function (url) {
+                imgProfile.src = url;
+            }).catch(function (error) {
+                // Handle any errors
+            });
+
+        } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+        }
+    }).catch(function (error) {
+        console.log("Error getting document:", error);
+        alert(error);
+    });
+   
 }
 //delete note by select list
 function deleteNote() {
@@ -780,7 +836,7 @@ function openProfile() {
             $('#full_Name').text((doc.data().firstName) + " " + (doc.data().lastName));
             $('#DropDownTimezone').val(doc.data().timeZone);
 
-            var imgProfile = document.getElementById("profile-image1");
+            var imgProfile = document.getElementById("profile-image2");
             storageRef.child('userImage/' + doc.data().temp).getDownloadURL().then(function (url) {
                 imgProfile.src = url;
             }).catch(function (error) {
