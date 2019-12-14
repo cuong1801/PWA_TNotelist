@@ -1417,7 +1417,7 @@ function search() {
                                 var tit = doc.data().name;
                                 var subTit = tit.slice(0, 30);
                                 var subDes = des.slice(0, 30);
-                                if (curDay.getFullYear() == linhDay.getFullYear() && curDay.getMonth() == linhDay.getMonth() && curDay.getDate() == linhDay.getDate() && linhDay.getTime() <= curDay.getTime()) {
+                                if (curDay.getFullYear() == linhDay.getFullYear() && curDay.getMonth() == linhDay.getMonth() && curDay.getDate() == linhDay.getDate() && linhDay.getTime() >= curDay.getTime()) {
                                     if (tim == "" && category_selected == "") {
                                         $("#name_notes").append(
                                             '<a id="del' + doc.id + '" data-id="' + doc.id + '" class="card3 a "  >' +
@@ -1999,7 +1999,7 @@ function Notificationshow() {
                             var tit = doc.data().name;
                             var subTit = tit.slice(0, 30);
                             var subDes = des.slice(0, 30);
-                            if (curDay.getFullYear() == linhDay.getFullYear() && curDay.getMonth() == linhDay.getMonth() && curDay.getDate() == linhDay.getDate() && linhDay.getTime() <= curDay.getTime()) {
+                            if (curDay.getFullYear() == linhDay.getFullYear() && curDay.getMonth() == linhDay.getMonth() && curDay.getDate() == linhDay.getDate() && linhDay.getTime() >= curDay.getTime()) {
                                 if (category_selected == "") {
                                     $("#name_notes").append(
                                         '<a id="del' + doc.id + '" data-id="' + doc.id + '" class="card3 a "  >' +
