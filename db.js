@@ -1,4 +1,5 @@
 // enable offline data
+var notificationCheck = false;
 var finish = false;
 var notYet = false;
 var storageRef = firebase.storage().ref();
@@ -134,6 +135,7 @@ function done() {
     document.getElementById("search").value = "";
     finish = true;
     notYet = false;
+    notificationCheck = false;
     $('#listNotes').load('show_not.html');
     firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
@@ -291,6 +293,7 @@ function done() {
 function doing() {
     finish = false;
     notYet = true;
+    notificationCheck = false;
     $('#listNotes').load('show_not.html');
     firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
@@ -459,9 +462,11 @@ function Category_select(category) {
     for (var i = 0; i < options.length; i++) {
         if (options[i].selected) {
             category_selected = options[i].value;
+            category_Name.value = category_selected;
             $('#listNotes').load('show_not.html');
             if (finish) { done(); }
             else if (notYet) { doing(); }
+            else if (notificationCheck) { Notificationshow(); }
             else {
                 firebase.auth().onAuthStateChanged(function (user) {
                     if (user) {
@@ -555,7 +560,7 @@ var NewNotes_name = document.getElementById("NewNotes_name");
 var NewNotes_location = document.getElementById("location_Name");
 var NewNotes_content = document.getElementById("NewNotes_content");
 var category_Name = document.getElementById("category_Name");
-var ListNotes_category = document.getElementById("ListNotes_category")
+var ListNotes_category = document.getElementById("ListNotes_category");
 
 function addnewcategory() {
     var category_Name_text = category_Name.value;
@@ -582,6 +587,7 @@ function deleteCategory() {
 
     } else {
         db.collection("category").doc(document.getElementById("category_Name").value + firebase.auth().currentUser.uid).delete();
+        category_Name.value = "";
     }
 }
 
@@ -693,11 +699,15 @@ function writeNotesData() {
     h2 = checkTime(h2);
     m2 = checkTime(m2);
     timepost2 = MM2 + "/" + DD2 + "/" + YYYY2 + " " + h2 + ":" + m2;
-
+    var Note_timepost2;
     if (timepost2.includes("NaN")) {
         timepost2 = "";
+        Note_timepost2 = "";
+    } else {
+        Note_timepost2 = new Date(timepost2);
     }
-    alert(timepost2);
+
+    //alert(timepost2);
     if (NewNotes_name_text_value.length === 0 || NewNotes_name_text_value.length > 20) {
         alert('Title are required to continue!');
     } else {
@@ -708,6 +718,7 @@ function writeNotesData() {
             timepost: Note_timepost,
             timepostShow: timepost,
             timenotification: timepost2,
+            timepostNotification: Note_timepost2,
             content: document.getElementById("NewNotes_content").value,
             category: document.getElementById("ListNotes_category1").value,
             userID: firebase.auth().currentUser.uid,
@@ -795,7 +806,7 @@ function saveIn() {
         console.log("Error getting document:", error);
         alert(error);
     });
-   
+
 }
 //delete note by select list
 function deleteNote() {
@@ -1398,6 +1409,274 @@ function search() {
                                     }
                                 }
                             }
+                        } else if (notificationCheck) {
+                            if (doc.data().userID == idUser) {
+                                var curDay = new Date();
+                                var linhDay = new Date(doc.data().timenotification);
+                                var des = doc.data().content;
+                                var tit = doc.data().name;
+                                var subTit = tit.slice(0, 30);
+                                var subDes = des.slice(0, 30);
+                                if (curDay.getFullYear() == linhDay.getFullYear() && curDay.getMonth() == linhDay.getMonth() && curDay.getDate() == linhDay.getDate() && linhDay.getTime() <= curDay.getTime()) {
+                                    if (tim == "" && category_selected == "") {
+                                        $("#name_notes").append(
+                                            '<a id="del' + doc.id + '" data-id="' + doc.id + '" class="card3 a "  >' +
+                                            '<div class="go-corner" >' +
+                                            '<div id="' + doc.id + '" class="go-arrow btn btn-outline-danger" onclick="deleteNote()">' +
+                                            'x' +
+                                            '</div>' +
+                                            '</div>' +
+                                            '<div  data-toggle="modal" data-target="#exampleModalScrollable' + doc.id + '">' +
+                                            '<div class="row">' +
+
+                                            '<div class="col-md-7">' +
+                                            '<h3 class="h3">' + subTit + '</h3>' +
+                                            '</div>' +
+                                            '<div class="col-md-5">' +
+                                            '<h4 id="' + doc.id + 'Linhcategory" class="h4" style="margin-top:20px;">' + doc.data().category + '</h4>' +
+                                            '</div>' +
+                                            '</div>' +
+                                            '<p class="p small ">Content:' + subDes + '</p>' +
+                                            '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
+                                            '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+
+                                            '</div>' +
+
+                                            '</a>' +
+
+                                            '<div class="modal fade" id="exampleModalScrollable' + doc.id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">' +
+                                            '<div class="modal-dialog modal-dialog-scrollable" role="document">' +
+                                            '<div class="modal-content">' +
+                                            '<div class="modal-header">' +
+                                            '<h1 id="' + doc.id + 'Linhname" class="modal-title">' + doc.data().name + '</h1>' +
+                                            '<small style="padding: 15px;"><em>' + doc.data().category + '</em></small>' +
+
+                                            '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+                                            '<span aria-hidden="true">&times;</span>' +
+                                            '</button>' +
+                                            '</div>' +
+                                            '<div class="modal-body">' +
+                                            '<small><em>' + doc.data().timepostShow + '</em></small>' +
+                                            '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+                                            '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
+                                            // '<pre>' + doc.data().content + '</pre>' +
+
+                                            '<textarea class="form-control" rows="7">' + doc.data().content + '</textarea>' +
+                                            '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+
+                                            '</div>' +
+                                            '<div class="modal-footer">' +
+                                            '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
+                                            '<button type="button" class="btn btn-primary" onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                            '</div>' +
+                                            ' </div>' +
+                                            '</div>' +
+                                            '</div>'
+
+                                        );
+
+                                        var imgNote = document.getElementById("imgNote" + doc.data().name);
+                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
+                                            imgNote.src = url;
+                                        }).catch(function (error) { });
+                                    } else if (tim == "" && category_selected == doc.data().category) {
+                                        var des = doc.data().content;
+                                        var tit = doc.data().name;
+                                        var subTit = tit.slice(0, 30);
+                                        var subDes = des.slice(0, 30);
+                                        $("#name_notes").append(
+                                            '<a id="del' + doc.id + '" data-id="' + doc.id + '" class="card3 a "  >' +
+                                            '<div class="go-corner" >' +
+                                            '<div id="' + doc.id + '" class="go-arrow btn btn-outline-danger" onclick="deleteNote()">' +
+                                            'x' +
+                                            '</div>' +
+                                            '</div>' +
+                                            '<div  data-toggle="modal" data-target="#exampleModalScrollable' + doc.id + '">' +
+                                            '<div class="row">' +
+
+                                            '<div class="col-md-7">' +
+                                            '<h3 class="h3">' + subTit + '</h3>' +
+                                            '</div>' +
+                                            '<div class="col-md-5">' +
+                                            '<h4 id="' + doc.id + 'Linhcategory" class="h4" style="margin-top:20px;">' + doc.data().category + '</h4>' +
+                                            '</div>' +
+                                            '</div>' +
+                                            '<p class="p small ">Content:' + subDes + '</p>' +
+                                            '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
+                                            '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+
+                                            '</div>' +
+
+                                            '</a>' +
+
+                                            '<div class="modal fade" id="exampleModalScrollable' + doc.id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">' +
+                                            '<div class="modal-dialog modal-dialog-scrollable" role="document">' +
+                                            '<div class="modal-content">' +
+                                            '<div class="modal-header">' +
+                                            '<h1 id="' + doc.id + 'Linhname" class="modal-title">' + doc.data().name + '</h1>' +
+                                            '<small style="padding: 15px;"><em>' + doc.data().category + '</em></small>' +
+
+                                            '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+                                            '<span aria-hidden="true">&times;</span>' +
+                                            '</button>' +
+                                            '</div>' +
+                                            '<div class="modal-body">' +
+                                            '<small><em>' + doc.data().timepostShow + '</em></small>' +
+                                            '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+                                            '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
+                                            // '<pre>' + doc.data().content + '</pre>' +
+
+                                            '<textarea class="form-control" rows="7">' + doc.data().content + '</textarea>' +
+                                            '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+
+                                            '</div>' +
+                                            '<div class="modal-footer">' +
+                                            '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
+                                            '<button type="button" class="btn btn-primary" onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                            '</div>' +
+                                            ' </div>' +
+                                            '</div>' +
+                                            '</div>'
+
+                                        );
+
+                                        var imgNote = document.getElementById("imgNote" + doc.data().name);
+                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
+                                            imgNote.src = url;
+                                        }).catch(function (error) { });
+                                    } else if (tim2.includes(tim.toLowerCase()) && category_selected == "") {
+                                        var des = doc.data().content;
+                                        var tit = doc.data().name;
+                                        var subTit = tit.slice(0, 30);
+                                        var subDes = des.slice(0, 30);
+                                        $("#name_notes").append(
+                                            '<a id="del' + doc.id + '" data-id="' + doc.id + '" class="card3 a "  >' +
+                                            '<div class="go-corner" >' +
+                                            '<div id="' + doc.id + '" class="go-arrow btn btn-outline-danger" onclick="deleteNote()">' +
+                                            'x' +
+                                            '</div>' +
+                                            '</div>' +
+                                            '<div  data-toggle="modal" data-target="#exampleModalScrollable' + doc.id + '">' +
+                                            '<div class="row">' +
+
+                                            '<div class="col-md-7">' +
+                                            '<h3 class="h3">' + subTit + '</h3>' +
+                                            '</div>' +
+                                            '<div class="col-md-5">' +
+                                            '<h4 id="' + doc.id + 'Linhcategory" class="h4" style="margin-top:20px;">' + doc.data().category + '</h4>' +
+                                            '</div>' +
+                                            '</div>' +
+                                            '<p class="p small ">Content:' + subDes + '</p>' +
+                                            '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
+                                            '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+
+                                            '</div>' +
+
+                                            '</a>' +
+
+                                            '<div class="modal fade" id="exampleModalScrollable' + doc.id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">' +
+                                            '<div class="modal-dialog modal-dialog-scrollable" role="document">' +
+                                            '<div class="modal-content">' +
+                                            '<div class="modal-header">' +
+                                            '<h1 id="' + doc.id + 'Linhname" class="modal-title">' + doc.data().name + '</h1>' +
+                                            '<small style="padding: 15px;"><em>' + doc.data().category + '</em></small>' +
+
+                                            '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+                                            '<span aria-hidden="true">&times;</span>' +
+                                            '</button>' +
+                                            '</div>' +
+                                            '<div class="modal-body">' +
+                                            '<small><em>' + doc.data().timepostShow + '</em></small>' +
+                                            '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+                                            '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
+                                            // '<pre>' + doc.data().content + '</pre>' +
+
+                                            '<textarea class="form-control" rows="7">' + doc.data().content + '</textarea>' +
+                                            '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+
+                                            '</div>' +
+                                            '<div class="modal-footer">' +
+                                            '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
+                                            '<button type="button" class="btn btn-primary" onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                            '</div>' +
+                                            ' </div>' +
+                                            '</div>' +
+                                            '</div>'
+
+                                        );
+
+                                        var imgNote = document.getElementById("imgNote" + doc.data().name);
+                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
+                                            imgNote.src = url;
+                                        }).catch(function (error) { });
+                                    } else if (tim2.includes(tim.toLowerCase()) && category_selected == doc.data().category) {
+                                        var des = doc.data().content;
+                                        var tit = doc.data().name;
+                                        var subTit = tit.slice(0, 30);
+                                        var subDes = des.slice(0, 30);
+                                        $("#name_notes").append(
+                                            '<a id="del' + doc.id + '" data-id="' + doc.id + '" class="card3 a "  >' +
+                                            '<div class="go-corner" >' +
+                                            '<div id="' + doc.id + '" class="go-arrow btn btn-outline-danger" onclick="deleteNote()">' +
+                                            'x' +
+                                            '</div>' +
+                                            '</div>' +
+                                            '<div  data-toggle="modal" data-target="#exampleModalScrollable' + doc.id + '">' +
+                                            '<div class="row">' +
+
+                                            '<div class="col-md-7">' +
+                                            '<h3 class="h3">' + subTit + '</h3>' +
+                                            '</div>' +
+                                            '<div class="col-md-5">' +
+                                            '<h4 id="' + doc.id + 'Linhcategory" class="h4" style="margin-top:20px;">' + doc.data().category + '</h4>' +
+                                            '</div>' +
+                                            '</div>' +
+                                            '<p class="p small ">Content:' + subDes + '</p>' +
+                                            '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
+                                            '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+
+                                            '</div>' +
+
+                                            '</a>' +
+
+                                            '<div class="modal fade" id="exampleModalScrollable' + doc.id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">' +
+                                            '<div class="modal-dialog modal-dialog-scrollable" role="document">' +
+                                            '<div class="modal-content">' +
+                                            '<div class="modal-header">' +
+                                            '<h1 id="' + doc.id + 'Linhname" class="modal-title">' + doc.data().name + '</h1>' +
+                                            '<small style="padding: 15px;"><em>' + doc.data().category + '</em></small>' +
+
+                                            '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+                                            '<span aria-hidden="true">&times;</span>' +
+                                            '</button>' +
+                                            '</div>' +
+                                            '<div class="modal-body">' +
+                                            '<small><em>' + doc.data().timepostShow + '</em></small>' +
+                                            '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+                                            '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
+                                            // '<pre>' + doc.data().content + '</pre>' +
+
+                                            '<textarea class="form-control" rows="7">' + doc.data().content + '</textarea>' +
+                                            '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+
+                                            '</div>' +
+                                            '<div class="modal-footer">' +
+                                            '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
+                                            '<button type="button" class="btn btn-primary" onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                            '</div>' +
+                                            ' </div>' +
+                                            '</div>' +
+                                            '</div>'
+
+                                        );
+
+                                        var imgNote = document.getElementById("imgNote" + doc.data().name);
+                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
+                                            imgNote.src = url;
+                                        }).catch(function (error) { });
+                                    }
+                                }
+                            }
                         } else {
                             var des = doc.data().content;
                             var tit = doc.data().name;
@@ -1662,6 +1941,192 @@ function search() {
                             }
                         }
                     });
+                });
+            }
+        }
+    });
+}
+
+function Notificationshow() {
+    notificationCheck = true;
+    notYet = false;
+    finish = false;
+    $('#listNotes').load('show_not.html');
+    document.getElementById("pills-done-tab").hidden = true;
+    document.getElementById("pills-doing-tab").hidden = true;
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+
+            var user = firebase.auth().currentUser;
+
+            if (user != null) {
+                var idUser = firebase.auth().currentUser.uid;
+                var docRef = db.collection('users').doc(idUser);
+                docRef.get().then(function (doc) {
+
+                    if (doc.exists) {
+                        console.log("Document user profile:", doc.data());
+                        $('#first_Name').val(doc.data().firstName);
+                        $('#last_Name').val(doc.data().lastName);
+                        $('#nationality').val(doc.data().nationality);
+                        $('#national').text(doc.data().nationality);
+                        $('#full_Name').text((doc.data().firstName) + " " + (doc.data().lastName));
+                        $('#DropDownTimezone').val(doc.data().timeZone);
+
+                        var imgProfile = document.getElementById("profile-image1");
+                        storageRef.child('userImage/' + doc.data().temp).getDownloadURL().then(function (url) {
+                            imgProfile.src = url;
+                        }).catch(function (error) {
+                            // Handle any errors
+                        });
+
+                    } else {
+                        // doc.data() will be undefined in this case
+                        console.log("No such document!");
+                    }
+                }).catch(function (error) {
+                    console.log("Error getting document:", error);
+                    alert(error);
+                });
+                // var listcategory = document.getElementById("ListNotes_category").value;
+                db.collection("notelist").orderBy("timepostNotification", "asc").get().then(snapshot => {
+
+                    snapshot.docs.forEach(doc => {
+                        if (doc.data().userID == idUser) {
+                            var curDay = new Date();
+                            var linhDay = new Date(doc.data().timenotification);
+                            var des = doc.data().content;
+                            var tit = doc.data().name;
+                            var subTit = tit.slice(0, 30);
+                            var subDes = des.slice(0, 30);
+                            if (curDay.getFullYear() == linhDay.getFullYear() && curDay.getMonth() == linhDay.getMonth() && curDay.getDate() == linhDay.getDate() && linhDay.getTime() <= curDay.getTime()) {
+                                if (category_selected == "") {
+                                    $("#name_notes").append(
+                                        '<a id="del' + doc.id + '" data-id="' + doc.id + '" class="card3 a "  >' +
+                                        '<div class="go-corner" >' +
+                                        '<div id="' + doc.id + '" class="go-arrow btn btn-outline-danger" onclick="deleteNote()">' +
+                                        'x' +
+                                        '</div>' +
+                                        '</div>' +
+                                        '<div  data-toggle="modal" data-target="#exampleModalScrollable' + doc.id + '">' +
+                                        '<div class="row">' +
+
+                                        '<div class="col-md-7">' +
+                                        '<h3 class="h3">' + subTit + '</h3>' +
+                                        '</div>' +
+                                        '<div class="col-md-5">' +
+                                        '<h4 id="' + doc.id + 'Linhcategory" class="h4" style="margin-top:20px;">' + doc.data().category + '</h4>' +
+                                        '</div>' +
+                                        '</div>' +
+                                        '<p class="p small ">Content:' + subDes + '</p>' +
+                                        '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
+                                        '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+
+                                        '</div>' +
+
+                                        '</a>' +
+
+                                        '<div class="modal fade" id="exampleModalScrollable' + doc.id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">' +
+                                        '<div class="modal-dialog modal-dialog-scrollable" role="document">' +
+                                        '<div class="modal-content">' +
+                                        '<div class="modal-header">' +
+                                        '<h1 id="' + doc.id + 'Linhname" class="modal-title">' + doc.data().name + '</h1>' +
+                                        '<small style="padding: 15px;"><em>' + doc.data().category + '</em></small>' +
+
+                                        '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+                                        '<span aria-hidden="true">&times;</span>' +
+                                        '</button>' +
+                                        '</div>' +
+                                        '<div class="modal-body">' +
+                                        '<small><em>' + doc.data().timepostShow + '</em></small>' +
+                                        '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+                                        '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
+                                        // '<pre>' + doc.data().content + '</pre>' +
+
+                                        '<textarea class="form-control" rows="7">' + doc.data().content + '</textarea>' +
+                                        '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+
+                                        '</div>' +
+                                        '<div class="modal-footer">' +
+                                        '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
+                                        '<button type="button" class="btn btn-primary" onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                        '</div>' +
+                                        ' </div>' +
+                                        '</div>' +
+                                        '</div>'
+
+                                    );
+
+                                    var imgNote = document.getElementById("imgNote" + doc.data().name);
+                                    storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
+                                        imgNote.src = url;
+                                    }).catch(function (error) { });
+                                } else if (category_selected == doc.data().category) {
+                                    $("#name_notes").append(
+                                        '<a id="del' + doc.id + '" data-id="' + doc.id + '" class="card3 a "  >' +
+                                        '<div class="go-corner" >' +
+                                        '<div id="' + doc.id + '" class="go-arrow btn btn-outline-danger" onclick="deleteNote()">' +
+                                        'x' +
+                                        '</div>' +
+                                        '</div>' +
+                                        '<div  data-toggle="modal" data-target="#exampleModalScrollable' + doc.id + '">' +
+                                        '<div class="row">' +
+
+                                        '<div class="col-md-7">' +
+                                        '<h3 class="h3">' + subTit + '</h3>' +
+                                        '</div>' +
+                                        '<div class="col-md-5">' +
+                                        '<h4 id="' + doc.id + 'Linhcategory" class="h4" style="margin-top:20px;">' + doc.data().category + '</h4>' +
+                                        '</div>' +
+                                        '</div>' +
+                                        '<p class="p small ">Content:' + subDes + '</p>' +
+                                        '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
+                                        '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+
+                                        '</div>' +
+
+                                        '</a>' +
+
+                                        '<div class="modal fade" id="exampleModalScrollable' + doc.id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">' +
+                                        '<div class="modal-dialog modal-dialog-scrollable" role="document">' +
+                                        '<div class="modal-content">' +
+                                        '<div class="modal-header">' +
+                                        '<h1 id="' + doc.id + 'Linhname" class="modal-title">' + doc.data().name + '</h1>' +
+                                        '<small style="padding: 15px;"><em>' + doc.data().category + '</em></small>' +
+
+                                        '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+                                        '<span aria-hidden="true">&times;</span>' +
+                                        '</button>' +
+                                        '</div>' +
+                                        '<div class="modal-body">' +
+                                        '<small><em>' + doc.data().timepostShow + '</em></small>' +
+                                        '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+                                        '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
+                                        // '<pre>' + doc.data().content + '</pre>' +
+
+                                        '<textarea class="form-control" rows="7">' + doc.data().content + '</textarea>' +
+                                        '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+
+                                        '</div>' +
+                                        '<div class="modal-footer">' +
+                                        '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
+                                        '<button type="button" class="btn btn-primary" onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                        '</div>' +
+                                        ' </div>' +
+                                        '</div>' +
+                                        '</div>'
+
+                                    );
+
+                                    var imgNote = document.getElementById("imgNote" + doc.data().name);
+                                    storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
+                                        imgNote.src = url;
+                                    }).catch(function (error) { });
+                                }
+                            }
+                        }
+                    });
+
                 });
             }
         }
