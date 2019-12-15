@@ -5,7 +5,7 @@ var notYet = false;
 var storageRef = firebase.storage().ref();
 
 db.enablePersistence()
-    .catch(function (err) {
+    .catch(function(err) {
         if (err.code == 'failed-precondition') {
             // probably multible tabs open at once
             console.log('persistance failed');
@@ -15,10 +15,10 @@ db.enablePersistence()
         }
     });
 
-window.onload = function () {
+window.onload = function() {
     var dem = 0;
     $('#listNotes').load('show_not.html');
-    firebase.auth().onAuthStateChanged(function (user) {
+    firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
 
             var user = firebase.auth().currentUser;
@@ -26,7 +26,7 @@ window.onload = function () {
             if (user != null) {
                 var idUser = firebase.auth().currentUser.uid;
                 var docRef = db.collection('users').doc(idUser);
-                docRef.get().then(function (doc) {
+                docRef.get().then(function(doc) {
 
                     if (doc.exists) {
                         console.log("Document user profile:", doc.data());
@@ -38,9 +38,9 @@ window.onload = function () {
                         $('#DropDownTimezone').val(doc.data().timeZone);
 
                         var imgProfile = document.getElementById("profile-image1");
-                        storageRef.child('userImage/' + doc.data().temp).getDownloadURL().then(function (url) {
+                        storageRef.child('userImage/' + doc.data().temp).getDownloadURL().then(function(url) {
                             imgProfile.src = url;
-                        }).catch(function (error) {
+                        }).catch(function(error) {
                             // Handle any errors
                         });
 
@@ -48,7 +48,7 @@ window.onload = function () {
                         // doc.data() will be undefined in this case
                         console.log("No such document!");
                     }
-                }).catch(function (error) {
+                }).catch(function(error) {
                     console.log("Error getting document:", error);
                     alert(error);
                 });
@@ -104,13 +104,14 @@ window.onload = function () {
                                 '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
                                 // '<pre>' + doc.data().content + '</pre>' +
 
-                                '<textarea class="form-control" rows="7">' + doc.data().content + '</textarea>' +
+                                '<textarea id="' + doc.id + 'Linhcontent"class="form-control" rows="7">' + doc.data().content + '</textarea>' +
                                 '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
 
                                 '</div>' +
                                 '<div class="modal-footer">' +
-                                '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
-                                '<button type="button" class="btn btn-primary" onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  data-dismiss="modal">Close</button>' +
+                                '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  onclick="save(\'' + doc.id + '\')">Save</button>' +
+
                                 '</div>' +
                                 ' </div>' +
                                 '</div>' +
@@ -119,9 +120,9 @@ window.onload = function () {
                             );
 
                             var imgNote = document.getElementById("imgNote" + doc.data().name);
-                            storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
+                            storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
                                 imgNote.src = url;
-                            }).catch(function (error) { });
+                            }).catch(function(error) {});
                         }
                     });
 
@@ -137,7 +138,7 @@ function done() {
     notYet = false;
     notificationCheck = false;
     $('#listNotes').load('show_not.html');
-    firebase.auth().onAuthStateChanged(function (user) {
+    firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
 
             var user = firebase.auth().currentUser;
@@ -214,9 +215,9 @@ function done() {
                                     );
 
                                     var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                    storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
+                                    storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
                                         imgNote.src = url;
-                                    }).catch(function (error) { });
+                                    }).catch(function(error) {});
                                 } else if (category_selected == doc.data().category) {
                                     $("#name_notes").append(
                                         '<a id="del' + doc.id + '" data-id="' + doc.id + '" class="card3 a "  >' +
@@ -275,9 +276,9 @@ function done() {
                                     );
 
                                     var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                    storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
+                                    storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
                                         imgNote.src = url;
-                                    }).catch(function (error) { });
+                                    }).catch(function(error) {});
                                 }
 
                             }
@@ -295,7 +296,7 @@ function doing() {
     notYet = true;
     notificationCheck = false;
     $('#listNotes').load('show_not.html');
-    firebase.auth().onAuthStateChanged(function (user) {
+    firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
 
             var user = firebase.auth().currentUser;
@@ -372,9 +373,9 @@ function doing() {
                                     );
 
                                     var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                    storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
+                                    storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
                                         imgNote.src = url;
-                                    }).catch(function (error) { });
+                                    }).catch(function(error) {});
                                 } else if (category_selected == doc.data().category) {
                                     $("#name_notes").append(
                                         '<a id="del' + doc.id + '" data-id="' + doc.id + '" class="card3 a "  >' +
@@ -433,9 +434,9 @@ function doing() {
                                     );
 
                                     var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                    storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
+                                    storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
                                         imgNote.src = url;
-                                    }).catch(function (error) { });
+                                    }).catch(function(error) {});
                                 }
 
                             }
@@ -464,11 +465,8 @@ function Category_select(category) {
             category_selected = options[i].value;
             category_Name.value = category_selected;
             $('#listNotes').load('show_not.html');
-            if (finish) { done(); }
-            else if (notYet) { doing(); }
-            else if (notificationCheck) { Notificationshow(); }
-            else {
-                firebase.auth().onAuthStateChanged(function (user) {
+            if (finish) { done(); } else if (notYet) { doing(); } else if (notificationCheck) { Notificationshow(); } else {
+                firebase.auth().onAuthStateChanged(function(user) {
                     if (user) {
 
                         var user = firebase.auth().currentUser;
@@ -533,8 +531,8 @@ function Category_select(category) {
 
                                             '</div>' +
                                             '<div class="modal-footer">' +
-                                            '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
-                                            '<button type="button" class="btn btn-primary" onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-outline-info"  data-dismiss="modal">Close</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-outline-info"  onclick="save(\'' + doc.id + '\')">Save</button>' +
                                             '</div>' +
                                             ' </div>' +
                                             '</div>' +
@@ -543,9 +541,9 @@ function Category_select(category) {
                                         );
 
                                         var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
+                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
                                             imgNote.src = url;
-                                        }).catch(function (error) { });
+                                        }).catch(function(error) {});
                                     }
                                 });
                             });
@@ -609,7 +607,7 @@ function checkTime(i) {
     }
     return i;
 }
-document.getElementById('NewNotes_checkTime').onclick = function (e) {
+document.getElementById('NewNotes_checkTime').onclick = function(e) {
     var check = false;
     if (this.checked) {
         document.getElementById('notification').style.display = 'block';
@@ -620,6 +618,7 @@ document.getElementById('NewNotes_checkTime').onclick = function (e) {
 };
 
 function save(id) {
+    alert(document.getElementById(id + "Linhcontent").value);
     var today = new Date();
     var timepost;
 
@@ -713,22 +712,22 @@ function writeNotesData() {
     } else {
         var n = 0;
         db.collection('notelist').add({
-            name: document.getElementById("NewNotes_name").value,
-            location: document.getElementById("location_Name").value,
-            timepost: Note_timepost,
-            timepostShow: timepost,
-            timenotification: timepost2,
-            timepostNotification: Note_timepost2,
-            content: document.getElementById("NewNotes_content").value,
-            category: document.getElementById("ListNotes_category1").value,
-            userID: firebase.auth().currentUser.uid,
-            image: temp
+                name: document.getElementById("NewNotes_name").value,
+                location: document.getElementById("location_Name").value,
+                timepost: Note_timepost,
+                timepostShow: timepost,
+                timenotification: timepost2,
+                timepostNotification: Note_timepost2,
+                content: document.getElementById("NewNotes_content").value,
+                category: document.getElementById("ListNotes_category1").value,
+                userID: firebase.auth().currentUser.uid,
+                image: temp
 
-        })
-            .then(function (docRef) {
+            })
+            .then(function(docRef) {
                 console.log("Document written with ID: ", docRef.id);
             })
-            .catch(function (error) {
+            .catch(function(error) {
                 alert(error);
                 console.error("Error adding document: ", error);
             });
@@ -739,7 +738,7 @@ function writeNotesData() {
 //listen for image profile selection
 var tempProfile = "";
 var userImg = document.getElementById('profile-image-upload');
-userImg.addEventListener('change', function (e) {
+userImg.addEventListener('change', function(e) {
     //get file
     var file = e.target.files[0];
     //create a storage ref
@@ -780,7 +779,7 @@ function saveIn() {
         timeZone: timeZone,
         temp: tempProfile
     })
-    docRef.get().then(function (doc) {
+    docRef.get().then(function(doc) {
 
         if (doc.exists) {
             console.log("Document user profile:", doc.data());
@@ -792,9 +791,9 @@ function saveIn() {
             $('#DropDownTimezone').val(doc.data().timeZone);
 
             var imgProfile = document.getElementById("profile-image1");
-            storageRef.child('userImage/' + doc.data().temp).getDownloadURL().then(function (url) {
+            storageRef.child('userImage/' + doc.data().temp).getDownloadURL().then(function(url) {
                 imgProfile.src = url;
-            }).catch(function (error) {
+            }).catch(function(error) {
                 // Handle any errors
             });
 
@@ -802,7 +801,7 @@ function saveIn() {
             // doc.data() will be undefined in this case
             console.log("No such document!");
         }
-    }).catch(function (error) {
+    }).catch(function(error) {
         console.log("Error getting document:", error);
         alert(error);
     });
@@ -836,7 +835,7 @@ function openProfile() {
     $('#userProfileModal').modal('show');
     var idUser = firebase.auth().currentUser.uid;
     var docRef = db.collection('users').doc(idUser);
-    docRef.get().then(function (doc) {
+    docRef.get().then(function(doc) {
 
         if (doc.exists) {
             console.log("Document user profile:", doc.data());
@@ -848,9 +847,9 @@ function openProfile() {
             $('#DropDownTimezone').val(doc.data().timeZone);
 
             var imgProfile = document.getElementById("profile-image2");
-            storageRef.child('userImage/' + doc.data().temp).getDownloadURL().then(function (url) {
+            storageRef.child('userImage/' + doc.data().temp).getDownloadURL().then(function(url) {
                 imgProfile.src = url;
-            }).catch(function (error) {
+            }).catch(function(error) {
                 // Handle any errors
             });
 
@@ -858,7 +857,7 @@ function openProfile() {
             // doc.data() will be undefined in this case
             console.log("No such document!");
         }
-    }).catch(function (error) {
+    }).catch(function(error) {
         console.log("Error getting document:", error);
         alert(error);
     });
@@ -871,7 +870,7 @@ function uploadImg() {
 function search() {
     $('#listNotes').load('show_not.html');
     var tim = document.getElementById("search").value;
-    firebase.auth().onAuthStateChanged(function (user) {
+    firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
             var user = firebase.auth().currentUser;
 
@@ -947,9 +946,9 @@ function search() {
                                         );
 
                                         var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
+                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
                                             imgNote.src = url;
-                                        }).catch(function (error) { });
+                                        }).catch(function(error) {});
                                     } else if (tim == "" && category_selected == doc.data().category) {
                                         var des = doc.data().content;
                                         var tit = doc.data().name;
@@ -1011,9 +1010,9 @@ function search() {
                                         );
 
                                         var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
+                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
                                             imgNote.src = url;
-                                        }).catch(function (error) { });
+                                        }).catch(function(error) {});
                                     } else if (tim2.includes(tim.toLowerCase()) && category_selected == "") {
                                         var des = doc.data().content;
                                         var tit = doc.data().name;
@@ -1073,9 +1072,9 @@ function search() {
 
 
                                         var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
+                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
                                             imgNote.src = url;
-                                        }).catch(function (error) { });
+                                        }).catch(function(error) {});
                                     } else if (tim2.includes(tim.toLowerCase()) && category_selected == doc.data().category) {
                                         var des = doc.data().content;
                                         var tit = doc.data().name;
@@ -1135,9 +1134,9 @@ function search() {
 
 
                                         var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
+                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
                                             imgNote.src = url;
-                                        }).catch(function (error) { });
+                                        }).catch(function(error) {});
                                     }
                                 }
                             }
@@ -1208,9 +1207,9 @@ function search() {
                                         );
 
                                         var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
+                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
                                             imgNote.src = url;
-                                        }).catch(function (error) { });
+                                        }).catch(function(error) {});
                                     } else if (tim == "" && category_selected == doc.data().category) {
                                         var des = doc.data().content;
                                         var tit = doc.data().name;
@@ -1273,9 +1272,9 @@ function search() {
                                         );
 
                                         var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
+                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
                                             imgNote.src = url;
-                                        }).catch(function (error) { });
+                                        }).catch(function(error) {});
                                     } else if (tim2.includes(tim.toLowerCase()) && category_selected == "") {
                                         var des = doc.data().content;
                                         var tit = doc.data().name;
@@ -1338,9 +1337,9 @@ function search() {
                                         );
 
                                         var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
+                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
                                             imgNote.src = url;
-                                        }).catch(function (error) { });
+                                        }).catch(function(error) {});
                                     } else if (tim2.includes(tim.toLowerCase()) && category_selected == doc.data().category) {
                                         var des = doc.data().content;
                                         var tit = doc.data().name;
@@ -1403,9 +1402,9 @@ function search() {
                                         );
 
                                         var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
+                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
                                             imgNote.src = url;
-                                        }).catch(function (error) { });
+                                        }).catch(function(error) {});
                                     }
                                 }
                             }
@@ -1476,9 +1475,9 @@ function search() {
                                         );
 
                                         var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
+                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
                                             imgNote.src = url;
-                                        }).catch(function (error) { });
+                                        }).catch(function(error) {});
                                     } else if (tim == "" && category_selected == doc.data().category) {
                                         var des = doc.data().content;
                                         var tit = doc.data().name;
@@ -1541,9 +1540,9 @@ function search() {
                                         );
 
                                         var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
+                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
                                             imgNote.src = url;
-                                        }).catch(function (error) { });
+                                        }).catch(function(error) {});
                                     } else if (tim2.includes(tim.toLowerCase()) && category_selected == "") {
                                         var des = doc.data().content;
                                         var tit = doc.data().name;
@@ -1606,9 +1605,9 @@ function search() {
                                         );
 
                                         var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
+                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
                                             imgNote.src = url;
-                                        }).catch(function (error) { });
+                                        }).catch(function(error) {});
                                     } else if (tim2.includes(tim.toLowerCase()) && category_selected == doc.data().category) {
                                         var des = doc.data().content;
                                         var tit = doc.data().name;
@@ -1671,9 +1670,9 @@ function search() {
                                         );
 
                                         var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
+                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
                                             imgNote.src = url;
-                                        }).catch(function (error) { });
+                                        }).catch(function(error) {});
                                     }
                                 }
                             }
@@ -1740,9 +1739,9 @@ function search() {
                                 );
 
                                 var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
+                                storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
                                     imgNote.src = url;
-                                }).catch(function (error) { });
+                                }).catch(function(error) {});
                             } else if (tim == "" && category_selected == doc.data().category) {
                                 var des = doc.data().content;
                                 var tit = doc.data().name;
@@ -1805,9 +1804,9 @@ function search() {
                                 );
 
                                 var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
+                                storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
                                     imgNote.src = url;
-                                }).catch(function (error) { });
+                                }).catch(function(error) {});
                             } else if (tim2.includes(tim.toLowerCase()) && category_selected == "") {
                                 var des = doc.data().content;
                                 var tit = doc.data().name;
@@ -1870,9 +1869,9 @@ function search() {
                                 );
 
                                 var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
+                                storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
                                     imgNote.src = url;
-                                }).catch(function (error) { });
+                                }).catch(function(error) {});
                             } else if (tim2.includes(tim.toLowerCase()) && category_selected == doc.data().category) {
                                 var des = doc.data().content;
                                 var tit = doc.data().name;
@@ -1935,9 +1934,9 @@ function search() {
                                 );
 
                                 var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
+                                storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
                                     imgNote.src = url;
-                                }).catch(function (error) { });
+                                }).catch(function(error) {});
                             }
                         }
                     });
@@ -1954,7 +1953,7 @@ function Notificationshow() {
     $('#listNotes').load('show_not.html');
     document.getElementById("pills-done-tab").hidden = true;
     document.getElementById("pills-doing-tab").hidden = true;
-    firebase.auth().onAuthStateChanged(function (user) {
+    firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
 
             var user = firebase.auth().currentUser;
@@ -1962,7 +1961,7 @@ function Notificationshow() {
             if (user != null) {
                 var idUser = firebase.auth().currentUser.uid;
                 var docRef = db.collection('users').doc(idUser);
-                docRef.get().then(function (doc) {
+                docRef.get().then(function(doc) {
 
                     if (doc.exists) {
                         console.log("Document user profile:", doc.data());
@@ -1974,9 +1973,9 @@ function Notificationshow() {
                         $('#DropDownTimezone').val(doc.data().timeZone);
 
                         var imgProfile = document.getElementById("profile-image1");
-                        storageRef.child('userImage/' + doc.data().temp).getDownloadURL().then(function (url) {
+                        storageRef.child('userImage/' + doc.data().temp).getDownloadURL().then(function(url) {
                             imgProfile.src = url;
-                        }).catch(function (error) {
+                        }).catch(function(error) {
                             // Handle any errors
                         });
 
@@ -1984,7 +1983,7 @@ function Notificationshow() {
                         // doc.data() will be undefined in this case
                         console.log("No such document!");
                     }
-                }).catch(function (error) {
+                }).catch(function(error) {
                     console.log("Error getting document:", error);
                     alert(error);
                 });
@@ -2058,9 +2057,9 @@ function Notificationshow() {
                                     );
 
                                     var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                    storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
+                                    storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
                                         imgNote.src = url;
-                                    }).catch(function (error) { });
+                                    }).catch(function(error) {});
                                 } else if (category_selected == doc.data().category) {
                                     $("#name_notes").append(
                                         '<a id="del' + doc.id + '" data-id="' + doc.id + '" class="card3 a "  >' +
@@ -2119,9 +2118,9 @@ function Notificationshow() {
                                     );
 
                                     var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                    storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
+                                    storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
                                         imgNote.src = url;
-                                    }).catch(function (error) { });
+                                    }).catch(function(error) {});
                                 }
                             }
                         }
