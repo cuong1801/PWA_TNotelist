@@ -5,7 +5,7 @@ var notYet = false;
 var storageRef = firebase.storage().ref();
 
 db.enablePersistence()
-    .catch(function(err) {
+    .catch(function (err) {
         if (err.code == 'failed-precondition') {
             // probably multible tabs open at once
             console.log('persistance failed');
@@ -15,10 +15,10 @@ db.enablePersistence()
         }
     });
 
-window.onload = function() {
+window.onload = function () {
     var dem = 0;
     $('#listNotes').load('show_not.html');
-    firebase.auth().onAuthStateChanged(function(user) {
+    firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
 
             var user = firebase.auth().currentUser;
@@ -26,7 +26,7 @@ window.onload = function() {
             if (user != null) {
                 var idUser = firebase.auth().currentUser.uid;
                 var docRef = db.collection('users').doc(idUser);
-                docRef.get().then(function(doc) {
+                docRef.get().then(function (doc) {
 
                     if (doc.exists) {
                         console.log("Document user profile:", doc.data());
@@ -38,9 +38,9 @@ window.onload = function() {
                         $('#DropDownTimezone').val(doc.data().timeZone);
 
                         var imgProfile = document.getElementById("profile-image1");
-                        storageRef.child('userImage/' + doc.data().temp).getDownloadURL().then(function(url) {
+                        storageRef.child('userImage/' + doc.data().temp).getDownloadURL().then(function (url) {
                             imgProfile.src = url;
-                        }).catch(function(error) {
+                        }).catch(function (error) {
                             // Handle any errors
                         });
 
@@ -48,7 +48,7 @@ window.onload = function() {
                         // doc.data() will be undefined in this case
                         console.log("No such document!");
                     }
-                }).catch(function(error) {
+                }).catch(function (error) {
                     console.log("Error getting document:", error);
                     alert(error);
                 });
@@ -100,17 +100,18 @@ window.onload = function() {
                                 '</div>' +
                                 '<div class="modal-body">' +
                                 '<small><em>' + doc.data().timepostShow + '</em></small>' +
-                                '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+                                '<div class="dimmer"> <h6 id="' + doc.id + 'Linhnotification" class="h6">' + doc.data().timenotification + '</h6></div>' +
                                 '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
                                 // '<pre>' + doc.data().content + '</pre>' +
 
                                 '<textarea id="' + doc.id + 'Linhcontent"class="form-control" rows="7">' + doc.data().content + '</textarea>' +
-                                '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+                                '<img id="imgNote' + doc.id + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
 
                                 '</div>' +
                                 '<div class="modal-footer">' +
                                 '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  data-dismiss="modal">Close</button>' +
-                                '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info" id="' + doc.id + '" onclick="deleteNote()">Delete</button>' +
+                                '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  onclick="save(\'' + doc.id + '\',\'' + doc.data().image + '\')">Save</button>' +
 
                                 '</div>' +
                                 ' </div>' +
@@ -119,10 +120,10 @@ window.onload = function() {
 
                             );
 
-                            var imgNote = document.getElementById("imgNote" + doc.data().name);
-                            storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
+                            var imgNote = document.getElementById("imgNote" + doc.id);
+                            storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
                                 imgNote.src = url;
-                            }).catch(function(error) {});
+                            }).catch(function (error) { });
                         }
                     });
 
@@ -138,7 +139,7 @@ function done() {
     notYet = false;
     notificationCheck = false;
     $('#listNotes').load('show_not.html');
-    firebase.auth().onAuthStateChanged(function(user) {
+    firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
 
             var user = firebase.auth().currentUser;
@@ -167,7 +168,7 @@ function done() {
                                         '</div>' +
                                         '<div  data-toggle="modal" data-target="#exampleModalScrollable' + doc.id + '">' +
                                         '<div class="row">' +
-
+        
                                         '<div class="col-md-7">' +
                                         '<h3 class="h3">' + subTit + '</h3>' +
                                         '</div>' +
@@ -178,46 +179,48 @@ function done() {
                                         '<p class="p small ">Content:' + subDes + '</p>' +
                                         '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
                                         '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
-
+        
                                         '</div>' +
-
+        
                                         '</a>' +
-
+        
                                         '<div class="modal fade" id="exampleModalScrollable' + doc.id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">' +
                                         '<div class="modal-dialog modal-dialog-scrollable" role="document">' +
                                         '<div class="modal-content">' +
                                         '<div class="modal-header">' +
                                         '<h1 id="' + doc.id + 'Linhname" class="modal-title">' + doc.data().name + '</h1>' +
                                         '<small style="padding: 15px;"><em>' + doc.data().category + '</em></small>' +
-
+        
                                         '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
                                         '<span aria-hidden="true">&times;</span>' +
                                         '</button>' +
                                         '</div>' +
                                         '<div class="modal-body">' +
                                         '<small><em>' + doc.data().timepostShow + '</em></small>' +
-                                        '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+                                        '<div class="dimmer"> <h6 id="' + doc.id + 'Linhnotification" class="h6">' + doc.data().timenotification + '</h6></div>' +
                                         '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
                                         // '<pre>' + doc.data().content + '</pre>' +
-
-                                        '<textarea class="form-control" rows="7">' + doc.data().content + '</textarea>' +
-                                        '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
-
+        
+                                        '<textarea id="' + doc.id + 'Linhcontent"class="form-control" rows="7">' + doc.data().content + '</textarea>' +
+                                        '<img id="imgNote' + doc.id + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+        
                                         '</div>' +
                                         '<div class="modal-footer">' +
-                                        '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
-                                        '<button type="button" class="btn btn-primary" onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                        '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  data-dismiss="modal">Close</button>' +
+                                        '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info" id="' + doc.id + '" onclick="deleteNote()">Delete</button>' +
+                                        '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  onclick="save(\'' + doc.id + '\',\'' + doc.data().image + '\')">Save</button>' +
+        
                                         '</div>' +
                                         ' </div>' +
                                         '</div>' +
                                         '</div>'
-
+        
                                     );
-
-                                    var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                    storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
+        
+                                    var imgNote = document.getElementById("imgNote" + doc.id);
+                                    storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
                                         imgNote.src = url;
-                                    }).catch(function(error) {});
+                                    }).catch(function (error) { });
                                 } else if (category_selected == doc.data().category) {
                                     $("#name_notes").append(
                                         '<a id="del' + doc.id + '" data-id="' + doc.id + '" class="card3 a "  >' +
@@ -228,7 +231,7 @@ function done() {
                                         '</div>' +
                                         '<div  data-toggle="modal" data-target="#exampleModalScrollable' + doc.id + '">' +
                                         '<div class="row">' +
-
+        
                                         '<div class="col-md-7">' +
                                         '<h3 class="h3">' + subTit + '</h3>' +
                                         '</div>' +
@@ -239,46 +242,48 @@ function done() {
                                         '<p class="p small ">Content:' + subDes + '</p>' +
                                         '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
                                         '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
-
+        
                                         '</div>' +
-
+        
                                         '</a>' +
-
+        
                                         '<div class="modal fade" id="exampleModalScrollable' + doc.id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">' +
                                         '<div class="modal-dialog modal-dialog-scrollable" role="document">' +
                                         '<div class="modal-content">' +
                                         '<div class="modal-header">' +
                                         '<h1 id="' + doc.id + 'Linhname" class="modal-title">' + doc.data().name + '</h1>' +
                                         '<small style="padding: 15px;"><em>' + doc.data().category + '</em></small>' +
-
+        
                                         '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
                                         '<span aria-hidden="true">&times;</span>' +
                                         '</button>' +
                                         '</div>' +
                                         '<div class="modal-body">' +
                                         '<small><em>' + doc.data().timepostShow + '</em></small>' +
-                                        '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+                                        '<div class="dimmer"> <h6 id="' + doc.id + 'Linhnotification" class="h6">' + doc.data().timenotification + '</h6></div>' +
                                         '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
                                         // '<pre>' + doc.data().content + '</pre>' +
-
-                                        '<textarea class="form-control" rows="7">' + doc.data().content + '</textarea>' +
-                                        '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
-
+        
+                                        '<textarea id="' + doc.id + 'Linhcontent"class="form-control" rows="7">' + doc.data().content + '</textarea>' +
+                                        '<img id="imgNote' + doc.id + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+        
                                         '</div>' +
                                         '<div class="modal-footer">' +
-                                        '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
-                                        '<button type="button" class="btn btn-primary" onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                        '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  data-dismiss="modal">Close</button>' +
+                                        '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info" id="' + doc.id + '" onclick="deleteNote()">Delete</button>' +
+                                        '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  onclick="save(\'' + doc.id + '\',\'' + doc.data().image + '\')">Save</button>' +
+        
                                         '</div>' +
                                         ' </div>' +
                                         '</div>' +
                                         '</div>'
-
+        
                                     );
-
-                                    var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                    storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
+        
+                                    var imgNote = document.getElementById("imgNote" + doc.id);
+                                    storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
                                         imgNote.src = url;
-                                    }).catch(function(error) {});
+                                    }).catch(function (error) { });
                                 }
 
                             }
@@ -296,7 +301,7 @@ function doing() {
     notYet = true;
     notificationCheck = false;
     $('#listNotes').load('show_not.html');
-    firebase.auth().onAuthStateChanged(function(user) {
+    firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
 
             var user = firebase.auth().currentUser;
@@ -325,7 +330,7 @@ function doing() {
                                         '</div>' +
                                         '<div  data-toggle="modal" data-target="#exampleModalScrollable' + doc.id + '">' +
                                         '<div class="row">' +
-
+        
                                         '<div class="col-md-7">' +
                                         '<h3 class="h3">' + subTit + '</h3>' +
                                         '</div>' +
@@ -336,46 +341,48 @@ function doing() {
                                         '<p class="p small ">Content:' + subDes + '</p>' +
                                         '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
                                         '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
-
+        
                                         '</div>' +
-
+        
                                         '</a>' +
-
+        
                                         '<div class="modal fade" id="exampleModalScrollable' + doc.id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">' +
                                         '<div class="modal-dialog modal-dialog-scrollable" role="document">' +
                                         '<div class="modal-content">' +
                                         '<div class="modal-header">' +
                                         '<h1 id="' + doc.id + 'Linhname" class="modal-title">' + doc.data().name + '</h1>' +
                                         '<small style="padding: 15px;"><em>' + doc.data().category + '</em></small>' +
-
+        
                                         '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
                                         '<span aria-hidden="true">&times;</span>' +
                                         '</button>' +
                                         '</div>' +
                                         '<div class="modal-body">' +
                                         '<small><em>' + doc.data().timepostShow + '</em></small>' +
-                                        '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+                                        '<div class="dimmer"> <h6 id="' + doc.id + 'Linhnotification" class="h6">' + doc.data().timenotification + '</h6></div>' +
                                         '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
                                         // '<pre>' + doc.data().content + '</pre>' +
-
-                                        '<textarea class="form-control" rows="7">' + doc.data().content + '</textarea>' +
-                                        '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
-
+        
+                                        '<textarea id="' + doc.id + 'Linhcontent"class="form-control" rows="7">' + doc.data().content + '</textarea>' +
+                                        '<img id="imgNote' + doc.id + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+        
                                         '</div>' +
                                         '<div class="modal-footer">' +
-                                        '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
-                                        '<button type="button" class="btn btn-primary" onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                        '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  data-dismiss="modal">Close</button>' +
+                                        '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info" id="' + doc.id + '" onclick="deleteNote()">Delete</button>' +
+                                        '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  onclick="save(\'' + doc.id + '\',\'' + doc.data().image + '\')">Save</button>' +
+        
                                         '</div>' +
                                         ' </div>' +
                                         '</div>' +
                                         '</div>'
-
+        
                                     );
-
-                                    var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                    storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
+        
+                                    var imgNote = document.getElementById("imgNote" + doc.id);
+                                    storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
                                         imgNote.src = url;
-                                    }).catch(function(error) {});
+                                    }).catch(function (error) { });
                                 } else if (category_selected == doc.data().category) {
                                     $("#name_notes").append(
                                         '<a id="del' + doc.id + '" data-id="' + doc.id + '" class="card3 a "  >' +
@@ -386,7 +393,7 @@ function doing() {
                                         '</div>' +
                                         '<div  data-toggle="modal" data-target="#exampleModalScrollable' + doc.id + '">' +
                                         '<div class="row">' +
-
+        
                                         '<div class="col-md-7">' +
                                         '<h3 class="h3">' + subTit + '</h3>' +
                                         '</div>' +
@@ -397,46 +404,48 @@ function doing() {
                                         '<p class="p small ">Content:' + subDes + '</p>' +
                                         '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
                                         '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
-
+        
                                         '</div>' +
-
+        
                                         '</a>' +
-
+        
                                         '<div class="modal fade" id="exampleModalScrollable' + doc.id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">' +
                                         '<div class="modal-dialog modal-dialog-scrollable" role="document">' +
                                         '<div class="modal-content">' +
                                         '<div class="modal-header">' +
                                         '<h1 id="' + doc.id + 'Linhname" class="modal-title">' + doc.data().name + '</h1>' +
                                         '<small style="padding: 15px;"><em>' + doc.data().category + '</em></small>' +
-
+        
                                         '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
                                         '<span aria-hidden="true">&times;</span>' +
                                         '</button>' +
                                         '</div>' +
                                         '<div class="modal-body">' +
                                         '<small><em>' + doc.data().timepostShow + '</em></small>' +
-                                        '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+                                        '<div class="dimmer"> <h6 id="' + doc.id + 'Linhnotification" class="h6">' + doc.data().timenotification + '</h6></div>' +
                                         '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
                                         // '<pre>' + doc.data().content + '</pre>' +
-
-                                        '<textarea class="form-control" rows="7">' + doc.data().content + '</textarea>' +
-                                        '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
-
+        
+                                        '<textarea id="' + doc.id + 'Linhcontent"class="form-control" rows="7">' + doc.data().content + '</textarea>' +
+                                        '<img id="imgNote' + doc.id + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+        
                                         '</div>' +
                                         '<div class="modal-footer">' +
-                                        '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
-                                        '<button type="button" class="btn btn-primary" onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                        '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  data-dismiss="modal">Close</button>' +
+                                        '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info" id="' + doc.id + '" onclick="deleteNote()">Delete</button>' +
+                                        '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  onclick="save(\'' + doc.id + '\',\'' + doc.data().image + '\')">Save</button>' +
+        
                                         '</div>' +
                                         ' </div>' +
                                         '</div>' +
                                         '</div>'
-
+        
                                     );
-
-                                    var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                    storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
+        
+                                    var imgNote = document.getElementById("imgNote" + doc.id);
+                                    storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
                                         imgNote.src = url;
-                                    }).catch(function(error) {});
+                                    }).catch(function (error) { });
                                 }
 
                             }
@@ -466,7 +475,7 @@ function Category_select(category) {
             category_Name.value = category_selected;
             $('#listNotes').load('show_not.html');
             if (finish) { done(); } else if (notYet) { doing(); } else if (notificationCheck) { Notificationshow(); } else {
-                firebase.auth().onAuthStateChanged(function(user) {
+                firebase.auth().onAuthStateChanged(function (user) {
                     if (user) {
 
                         var user = firebase.auth().currentUser;
@@ -493,7 +502,7 @@ function Category_select(category) {
                                             '</div>' +
                                             '<div  data-toggle="modal" data-target="#exampleModalScrollable' + doc.id + '">' +
                                             '<div class="row">' +
-
+            
                                             '<div class="col-md-7">' +
                                             '<h3 class="h3">' + subTit + '</h3>' +
                                             '</div>' +
@@ -504,46 +513,48 @@ function Category_select(category) {
                                             '<p class="p small ">Content:' + subDes + '</p>' +
                                             '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
                                             '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
-
+            
                                             '</div>' +
-
+            
                                             '</a>' +
-
+            
                                             '<div class="modal fade" id="exampleModalScrollable' + doc.id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">' +
                                             '<div class="modal-dialog modal-dialog-scrollable" role="document">' +
                                             '<div class="modal-content">' +
                                             '<div class="modal-header">' +
                                             '<h1 id="' + doc.id + 'Linhname" class="modal-title">' + doc.data().name + '</h1>' +
                                             '<small style="padding: 15px;"><em>' + doc.data().category + '</em></small>' +
-
+            
                                             '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
                                             '<span aria-hidden="true">&times;</span>' +
                                             '</button>' +
                                             '</div>' +
                                             '<div class="modal-body">' +
                                             '<small><em>' + doc.data().timepostShow + '</em></small>' +
-                                            '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+                                            '<div class="dimmer"> <h6 id="' + doc.id + 'Linhnotification" class="h6">' + doc.data().timenotification + '</h6></div>' +
                                             '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
                                             // '<pre>' + doc.data().content + '</pre>' +
-
-                                            '<textarea class="form-control" rows="7">' + doc.data().content + '</textarea>' +
-                                            '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
-
+            
+                                            '<textarea id="' + doc.id + 'Linhcontent"class="form-control" rows="7">' + doc.data().content + '</textarea>' +
+                                            '<img id="imgNote' + doc.id + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+            
                                             '</div>' +
                                             '<div class="modal-footer">' +
-                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-outline-info"  data-dismiss="modal">Close</button>' +
-                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-outline-info"  onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  data-dismiss="modal">Close</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info" id="' + doc.id + '" onclick="deleteNote()">Delete</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  onclick="save(\'' + doc.id + '\',\'' + doc.data().image + '\')">Save</button>' +
+            
                                             '</div>' +
                                             ' </div>' +
                                             '</div>' +
                                             '</div>'
-
+            
                                         );
-
-                                        var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
+            
+                                        var imgNote = document.getElementById("imgNote" + doc.id);
+                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
                                             imgNote.src = url;
-                                        }).catch(function(error) {});
+                                        }).catch(function (error) { });
                                     }
                                 });
                             });
@@ -607,7 +618,7 @@ function checkTime(i) {
     }
     return i;
 }
-document.getElementById('NewNotes_checkTime').onclick = function(e) {
+document.getElementById('NewNotes_checkTime').onclick = function (e) {
     var check = false;
     if (this.checked) {
         document.getElementById('notification').style.display = 'block';
@@ -617,8 +628,8 @@ document.getElementById('NewNotes_checkTime').onclick = function(e) {
 
 };
 
-function save(id) {
-    alert(document.getElementById(id + "Linhcontent").value);
+function save(id,image) {
+    
     var today = new Date();
     var timepost;
 
@@ -640,16 +651,26 @@ function save(id) {
     var name = document.getElementById(id + "Linhname").innerHTML;
     var category = document.getElementById(id + "Linhcategory").innerHTML;
     var location = document.getElementById(id + "Linhlocation").innerHTML;
+    var notificationTime = document.getElementById(id + "Linhnotification").innerHTML;
+    var Note_timepost2;
+    if (notificationTime === "") {
+        notificationTime = "";
+        Note_timepost2 = "";
+    } else {
+        Note_timepost2 = new Date(notificationTime);
+    }
 
     db.collection('notelist').doc(id).set({
         name: name,
         location: location,
         timepost: Note_timepost,
         timepostShow: timepost,
+        timenotification: notificationTime,
+        timepostNotification: Note_timepost2,
         content: document.getElementById(id + "Linhcontent").value,
         category: category,
         userID: firebase.auth().currentUser.uid,
-        image: temp
+        image: image
     })
 
     // alert(name);
@@ -712,22 +733,22 @@ function writeNotesData() {
     } else {
         var n = 0;
         db.collection('notelist').add({
-                name: document.getElementById("NewNotes_name").value,
-                location: document.getElementById("location_Name").value,
-                timepost: Note_timepost,
-                timepostShow: timepost,
-                timenotification: timepost2,
-                timepostNotification: Note_timepost2,
-                content: document.getElementById("NewNotes_content").value,
-                category: document.getElementById("ListNotes_category1").value,
-                userID: firebase.auth().currentUser.uid,
-                image: temp
+            name: document.getElementById("NewNotes_name").value,
+            location: document.getElementById("location_Name").value,
+            timepost: Note_timepost,
+            timepostShow: timepost,
+            timenotification: timepost2,
+            timepostNotification: Note_timepost2,
+            content: document.getElementById("NewNotes_content").value,
+            category: document.getElementById("ListNotes_category1").value,
+            userID: firebase.auth().currentUser.uid,
+            image: temp
 
-            })
-            .then(function(docRef) {
+        })
+            .then(function (docRef) {
                 console.log("Document written with ID: ", docRef.id);
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 alert(error);
                 console.error("Error adding document: ", error);
             });
@@ -738,7 +759,7 @@ function writeNotesData() {
 //listen for image profile selection
 var tempProfile = "";
 var userImg = document.getElementById('profile-image-upload');
-userImg.addEventListener('change', function(e) {
+userImg.addEventListener('change', function (e) {
     //get file
     var file = e.target.files[0];
     //create a storage ref
@@ -779,7 +800,7 @@ function saveIn() {
         timeZone: timeZone,
         temp: tempProfile
     })
-    docRef.get().then(function(doc) {
+    docRef.get().then(function (doc) {
 
         if (doc.exists) {
             console.log("Document user profile:", doc.data());
@@ -791,9 +812,9 @@ function saveIn() {
             $('#DropDownTimezone').val(doc.data().timeZone);
 
             var imgProfile = document.getElementById("profile-image1");
-            storageRef.child('userImage/' + doc.data().temp).getDownloadURL().then(function(url) {
+            storageRef.child('userImage/' + doc.data().temp).getDownloadURL().then(function (url) {
                 imgProfile.src = url;
-            }).catch(function(error) {
+            }).catch(function (error) {
                 // Handle any errors
             });
 
@@ -801,7 +822,7 @@ function saveIn() {
             // doc.data() will be undefined in this case
             console.log("No such document!");
         }
-    }).catch(function(error) {
+    }).catch(function (error) {
         console.log("Error getting document:", error);
         alert(error);
     });
@@ -835,7 +856,7 @@ function openProfile() {
     $('#userProfileModal').modal('show');
     var idUser = firebase.auth().currentUser.uid;
     var docRef = db.collection('users').doc(idUser);
-    docRef.get().then(function(doc) {
+    docRef.get().then(function (doc) {
 
         if (doc.exists) {
             console.log("Document user profile:", doc.data());
@@ -847,9 +868,9 @@ function openProfile() {
             $('#DropDownTimezone').val(doc.data().timeZone);
 
             var imgProfile = document.getElementById("profile-image2");
-            storageRef.child('userImage/' + doc.data().temp).getDownloadURL().then(function(url) {
+            storageRef.child('userImage/' + doc.data().temp).getDownloadURL().then(function (url) {
                 imgProfile.src = url;
-            }).catch(function(error) {
+            }).catch(function (error) {
                 // Handle any errors
             });
 
@@ -857,7 +878,7 @@ function openProfile() {
             // doc.data() will be undefined in this case
             console.log("No such document!");
         }
-    }).catch(function(error) {
+    }).catch(function (error) {
         console.log("Error getting document:", error);
         alert(error);
     });
@@ -870,7 +891,7 @@ function uploadImg() {
 function search() {
     $('#listNotes').load('show_not.html');
     var tim = document.getElementById("search").value;
-    firebase.auth().onAuthStateChanged(function(user) {
+    firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
             var user = firebase.auth().currentUser;
 
@@ -899,7 +920,7 @@ function search() {
                                             '</div>' +
                                             '<div  data-toggle="modal" data-target="#exampleModalScrollable' + doc.id + '">' +
                                             '<div class="row">' +
-
+            
                                             '<div class="col-md-7">' +
                                             '<h3 class="h3">' + subTit + '</h3>' +
                                             '</div>' +
@@ -910,45 +931,48 @@ function search() {
                                             '<p class="p small ">Content:' + subDes + '</p>' +
                                             '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
                                             '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
-
+            
                                             '</div>' +
-
+            
                                             '</a>' +
-
+            
                                             '<div class="modal fade" id="exampleModalScrollable' + doc.id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">' +
                                             '<div class="modal-dialog modal-dialog-scrollable" role="document">' +
                                             '<div class="modal-content">' +
                                             '<div class="modal-header">' +
                                             '<h1 id="' + doc.id + 'Linhname" class="modal-title">' + doc.data().name + '</h1>' +
                                             '<small style="padding: 15px;"><em>' + doc.data().category + '</em></small>' +
-
+            
                                             '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
                                             '<span aria-hidden="true">&times;</span>' +
                                             '</button>' +
                                             '</div>' +
                                             '<div class="modal-body">' +
                                             '<small><em>' + doc.data().timepostShow + '</em></small>' +
+                                            '<div class="dimmer"> <h6 id="' + doc.id + 'Linhnotification" class="h6">' + doc.data().timenotification + '</h6></div>' +
                                             '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
                                             // '<pre>' + doc.data().content + '</pre>' +
-
-                                            '<textarea class="form-control" rows="7">' + doc.data().content + '</textarea>' +
-                                            '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
-
+            
+                                            '<textarea id="' + doc.id + 'Linhcontent"class="form-control" rows="7">' + doc.data().content + '</textarea>' +
+                                            '<img id="imgNote' + doc.id + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+            
                                             '</div>' +
                                             '<div class="modal-footer">' +
-                                            '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
-                                            '<button type="button" class="btn btn-primary" onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  data-dismiss="modal">Close</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info" id="' + doc.id + '" onclick="deleteNote()">Delete</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  onclick="save(\'' + doc.id + '\',\'' + doc.data().image + '\')">Save</button>' +
+            
                                             '</div>' +
                                             ' </div>' +
                                             '</div>' +
                                             '</div>'
-
+            
                                         );
-
-                                        var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
+            
+                                        var imgNote = document.getElementById("imgNote" + doc.id);
+                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
                                             imgNote.src = url;
-                                        }).catch(function(error) {});
+                                        }).catch(function (error) { });
                                     } else if (tim == "" && category_selected == doc.data().category) {
                                         var des = doc.data().content;
                                         var tit = doc.data().name;
@@ -963,7 +987,7 @@ function search() {
                                             '</div>' +
                                             '<div  data-toggle="modal" data-target="#exampleModalScrollable' + doc.id + '">' +
                                             '<div class="row">' +
-
+            
                                             '<div class="col-md-7">' +
                                             '<h3 class="h3">' + subTit + '</h3>' +
                                             '</div>' +
@@ -974,45 +998,48 @@ function search() {
                                             '<p class="p small ">Content:' + subDes + '</p>' +
                                             '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
                                             '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
-
+            
                                             '</div>' +
-
+            
                                             '</a>' +
-
+            
                                             '<div class="modal fade" id="exampleModalScrollable' + doc.id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">' +
                                             '<div class="modal-dialog modal-dialog-scrollable" role="document">' +
                                             '<div class="modal-content">' +
                                             '<div class="modal-header">' +
                                             '<h1 id="' + doc.id + 'Linhname" class="modal-title">' + doc.data().name + '</h1>' +
                                             '<small style="padding: 15px;"><em>' + doc.data().category + '</em></small>' +
-
+            
                                             '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
                                             '<span aria-hidden="true">&times;</span>' +
                                             '</button>' +
                                             '</div>' +
                                             '<div class="modal-body">' +
                                             '<small><em>' + doc.data().timepostShow + '</em></small>' +
+                                            '<div class="dimmer"> <h6 id="' + doc.id + 'Linhnotification" class="h6">' + doc.data().timenotification + '</h6></div>' +
                                             '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
                                             // '<pre>' + doc.data().content + '</pre>' +
-
-                                            '<textarea class="form-control" rows="7">' + doc.data().content + '</textarea>' +
-                                            '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
-
+            
+                                            '<textarea id="' + doc.id + 'Linhcontent"class="form-control" rows="7">' + doc.data().content + '</textarea>' +
+                                            '<img id="imgNote' + doc.id + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+            
                                             '</div>' +
                                             '<div class="modal-footer">' +
-                                            '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
-                                            '<button type="button" class="btn btn-primary" onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  data-dismiss="modal">Close</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info" id="' + doc.id + '" onclick="deleteNote()">Delete</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  onclick="save(\'' + doc.id + '\',\'' + doc.data().image + '\')">Save</button>' +
+            
                                             '</div>' +
                                             ' </div>' +
                                             '</div>' +
                                             '</div>'
-
+            
                                         );
-
-                                        var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
+            
+                                        var imgNote = document.getElementById("imgNote" + doc.id);
+                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
                                             imgNote.src = url;
-                                        }).catch(function(error) {});
+                                        }).catch(function (error) { });
                                     } else if (tim2.includes(tim.toLowerCase()) && category_selected == "") {
                                         var des = doc.data().content;
                                         var tit = doc.data().name;
@@ -1027,7 +1054,7 @@ function search() {
                                             '</div>' +
                                             '<div  data-toggle="modal" data-target="#exampleModalScrollable' + doc.id + '">' +
                                             '<div class="row">' +
-
+            
                                             '<div class="col-md-7">' +
                                             '<h3 class="h3">' + subTit + '</h3>' +
                                             '</div>' +
@@ -1037,44 +1064,49 @@ function search() {
                                             '</div>' +
                                             '<p class="p small ">Content:' + subDes + '</p>' +
                                             '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
-
+                                            '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+            
                                             '</div>' +
-
+            
                                             '</a>' +
-
+            
                                             '<div class="modal fade" id="exampleModalScrollable' + doc.id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">' +
                                             '<div class="modal-dialog modal-dialog-scrollable" role="document">' +
                                             '<div class="modal-content">' +
                                             '<div class="modal-header">' +
                                             '<h1 id="' + doc.id + 'Linhname" class="modal-title">' + doc.data().name + '</h1>' +
                                             '<small style="padding: 15px;"><em>' + doc.data().category + '</em></small>' +
-
+            
                                             '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
                                             '<span aria-hidden="true">&times;</span>' +
                                             '</button>' +
                                             '</div>' +
                                             '<div class="modal-body">' +
                                             '<small><em>' + doc.data().timepostShow + '</em></small>' +
-                                            '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small>' +
-                                            '<input id="' + doc.id + 'Linhcontent" type="text" value ="' + doc.data().content + '"/input>' +
-                                            '<img id="imgNote' + doc.data().name + '" style="width: 60% ; height: 100%; margin-left: 25%"></img>' +
-
+                                            '<div class="dimmer"> <h6 id="' + doc.id + 'Linhnotification" class="h6">' + doc.data().timenotification + '</h6></div>' +
+                                            '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
+                                            // '<pre>' + doc.data().content + '</pre>' +
+            
+                                            '<textarea id="' + doc.id + 'Linhcontent"class="form-control" rows="7">' + doc.data().content + '</textarea>' +
+                                            '<img id="imgNote' + doc.id + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+            
                                             '</div>' +
                                             '<div class="modal-footer">' +
-                                            '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
-                                            '<button type="button" class="btn btn-primary" onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  data-dismiss="modal">Close</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info" id="' + doc.id + '" onclick="deleteNote()">Delete</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  onclick="save(\'' + doc.id + '\',\'' + doc.data().image + '\')">Save</button>' +
+            
                                             '</div>' +
                                             ' </div>' +
                                             '</div>' +
                                             '</div>'
-
+            
                                         );
-
-
-                                        var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
+            
+                                        var imgNote = document.getElementById("imgNote" + doc.id);
+                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
                                             imgNote.src = url;
-                                        }).catch(function(error) {});
+                                        }).catch(function (error) { });
                                     } else if (tim2.includes(tim.toLowerCase()) && category_selected == doc.data().category) {
                                         var des = doc.data().content;
                                         var tit = doc.data().name;
@@ -1089,7 +1121,7 @@ function search() {
                                             '</div>' +
                                             '<div  data-toggle="modal" data-target="#exampleModalScrollable' + doc.id + '">' +
                                             '<div class="row">' +
-
+            
                                             '<div class="col-md-7">' +
                                             '<h3 class="h3">' + subTit + '</h3>' +
                                             '</div>' +
@@ -1099,44 +1131,49 @@ function search() {
                                             '</div>' +
                                             '<p class="p small ">Content:' + subDes + '</p>' +
                                             '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
-
+                                            '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+            
                                             '</div>' +
-
+            
                                             '</a>' +
-
+            
                                             '<div class="modal fade" id="exampleModalScrollable' + doc.id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">' +
                                             '<div class="modal-dialog modal-dialog-scrollable" role="document">' +
                                             '<div class="modal-content">' +
                                             '<div class="modal-header">' +
                                             '<h1 id="' + doc.id + 'Linhname" class="modal-title">' + doc.data().name + '</h1>' +
                                             '<small style="padding: 15px;"><em>' + doc.data().category + '</em></small>' +
-
+            
                                             '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
                                             '<span aria-hidden="true">&times;</span>' +
                                             '</button>' +
                                             '</div>' +
                                             '<div class="modal-body">' +
                                             '<small><em>' + doc.data().timepostShow + '</em></small>' +
-                                            '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small>' +
-                                            '<input id="' + doc.id + 'Linhcontent" type="text" value ="' + doc.data().content + '"/input>' +
-                                            '<img id="imgNote' + doc.data().name + '" style="width: 60% ; height: 100%; margin-left: 25%"></img>' +
-
+                                            '<div class="dimmer"> <h6 id="' + doc.id + 'Linhnotification" class="h6">' + doc.data().timenotification + '</h6></div>' +
+                                            '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
+                                            // '<pre>' + doc.data().content + '</pre>' +
+            
+                                            '<textarea id="' + doc.id + 'Linhcontent"class="form-control" rows="7">' + doc.data().content + '</textarea>' +
+                                            '<img id="imgNote' + doc.id + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+            
                                             '</div>' +
                                             '<div class="modal-footer">' +
-                                            '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
-                                            '<button type="button" class="btn btn-primary" onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  data-dismiss="modal">Close</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info" id="' + doc.id + '" onclick="deleteNote()">Delete</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  onclick="save(\'' + doc.id + '\',\'' + doc.data().image + '\')">Save</button>' +
+            
                                             '</div>' +
                                             ' </div>' +
                                             '</div>' +
                                             '</div>'
-
+            
                                         );
-
-
-                                        var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
+            
+                                        var imgNote = document.getElementById("imgNote" + doc.id);
+                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
                                             imgNote.src = url;
-                                        }).catch(function(error) {});
+                                        }).catch(function (error) { });
                                     }
                                 }
                             }
@@ -1159,7 +1196,7 @@ function search() {
                                             '</div>' +
                                             '<div  data-toggle="modal" data-target="#exampleModalScrollable' + doc.id + '">' +
                                             '<div class="row">' +
-
+            
                                             '<div class="col-md-7">' +
                                             '<h3 class="h3">' + subTit + '</h3>' +
                                             '</div>' +
@@ -1170,46 +1207,48 @@ function search() {
                                             '<p class="p small ">Content:' + subDes + '</p>' +
                                             '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
                                             '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
-
+            
                                             '</div>' +
-
+            
                                             '</a>' +
-
+            
                                             '<div class="modal fade" id="exampleModalScrollable' + doc.id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">' +
                                             '<div class="modal-dialog modal-dialog-scrollable" role="document">' +
                                             '<div class="modal-content">' +
                                             '<div class="modal-header">' +
                                             '<h1 id="' + doc.id + 'Linhname" class="modal-title">' + doc.data().name + '</h1>' +
                                             '<small style="padding: 15px;"><em>' + doc.data().category + '</em></small>' +
-
+            
                                             '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
                                             '<span aria-hidden="true">&times;</span>' +
                                             '</button>' +
                                             '</div>' +
                                             '<div class="modal-body">' +
                                             '<small><em>' + doc.data().timepostShow + '</em></small>' +
-                                            '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+                                            '<div class="dimmer"> <h6 id="' + doc.id + 'Linhnotification" class="h6">' + doc.data().timenotification + '</h6></div>' +
                                             '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
                                             // '<pre>' + doc.data().content + '</pre>' +
-
-                                            '<textarea class="form-control" rows="7">' + doc.data().content + '</textarea>' +
-                                            '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
-
+            
+                                            '<textarea id="' + doc.id + 'Linhcontent"class="form-control" rows="7">' + doc.data().content + '</textarea>' +
+                                            '<img id="imgNote' + doc.id + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+            
                                             '</div>' +
                                             '<div class="modal-footer">' +
-                                            '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
-                                            '<button type="button" class="btn btn-primary" onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  data-dismiss="modal">Close</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info" id="' + doc.id + '" onclick="deleteNote()">Delete</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  onclick="save(\'' + doc.id + '\',\'' + doc.data().image + '\')">Save</button>' +
+            
                                             '</div>' +
                                             ' </div>' +
                                             '</div>' +
                                             '</div>'
-
+            
                                         );
-
-                                        var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
+            
+                                        var imgNote = document.getElementById("imgNote" + doc.id);
+                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
                                             imgNote.src = url;
-                                        }).catch(function(error) {});
+                                        }).catch(function (error) { });
                                     } else if (tim == "" && category_selected == doc.data().category) {
                                         var des = doc.data().content;
                                         var tit = doc.data().name;
@@ -1224,7 +1263,7 @@ function search() {
                                             '</div>' +
                                             '<div  data-toggle="modal" data-target="#exampleModalScrollable' + doc.id + '">' +
                                             '<div class="row">' +
-
+            
                                             '<div class="col-md-7">' +
                                             '<h3 class="h3">' + subTit + '</h3>' +
                                             '</div>' +
@@ -1235,46 +1274,48 @@ function search() {
                                             '<p class="p small ">Content:' + subDes + '</p>' +
                                             '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
                                             '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
-
+            
                                             '</div>' +
-
+            
                                             '</a>' +
-
+            
                                             '<div class="modal fade" id="exampleModalScrollable' + doc.id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">' +
                                             '<div class="modal-dialog modal-dialog-scrollable" role="document">' +
                                             '<div class="modal-content">' +
                                             '<div class="modal-header">' +
                                             '<h1 id="' + doc.id + 'Linhname" class="modal-title">' + doc.data().name + '</h1>' +
                                             '<small style="padding: 15px;"><em>' + doc.data().category + '</em></small>' +
-
+            
                                             '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
                                             '<span aria-hidden="true">&times;</span>' +
                                             '</button>' +
                                             '</div>' +
                                             '<div class="modal-body">' +
                                             '<small><em>' + doc.data().timepostShow + '</em></small>' +
-                                            '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+                                            '<div class="dimmer"> <h6 id="' + doc.id + 'Linhnotification" class="h6">' + doc.data().timenotification + '</h6></div>' +
                                             '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
                                             // '<pre>' + doc.data().content + '</pre>' +
-
-                                            '<textarea class="form-control" rows="7">' + doc.data().content + '</textarea>' +
-                                            '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
-
+            
+                                            '<textarea id="' + doc.id + 'Linhcontent"class="form-control" rows="7">' + doc.data().content + '</textarea>' +
+                                            '<img id="imgNote' + doc.id + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+            
                                             '</div>' +
                                             '<div class="modal-footer">' +
-                                            '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
-                                            '<button type="button" class="btn btn-primary" onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  data-dismiss="modal">Close</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info" id="' + doc.id + '" onclick="deleteNote()">Delete</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  onclick="save(\'' + doc.id + '\',\'' + doc.data().image + '\')">Save</button>' +
+            
                                             '</div>' +
                                             ' </div>' +
                                             '</div>' +
                                             '</div>'
-
+            
                                         );
-
-                                        var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
+            
+                                        var imgNote = document.getElementById("imgNote" + doc.id);
+                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
                                             imgNote.src = url;
-                                        }).catch(function(error) {});
+                                        }).catch(function (error) { });
                                     } else if (tim2.includes(tim.toLowerCase()) && category_selected == "") {
                                         var des = doc.data().content;
                                         var tit = doc.data().name;
@@ -1289,7 +1330,7 @@ function search() {
                                             '</div>' +
                                             '<div  data-toggle="modal" data-target="#exampleModalScrollable' + doc.id + '">' +
                                             '<div class="row">' +
-
+            
                                             '<div class="col-md-7">' +
                                             '<h3 class="h3">' + subTit + '</h3>' +
                                             '</div>' +
@@ -1300,46 +1341,48 @@ function search() {
                                             '<p class="p small ">Content:' + subDes + '</p>' +
                                             '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
                                             '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
-
+            
                                             '</div>' +
-
+            
                                             '</a>' +
-
+            
                                             '<div class="modal fade" id="exampleModalScrollable' + doc.id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">' +
                                             '<div class="modal-dialog modal-dialog-scrollable" role="document">' +
                                             '<div class="modal-content">' +
                                             '<div class="modal-header">' +
                                             '<h1 id="' + doc.id + 'Linhname" class="modal-title">' + doc.data().name + '</h1>' +
                                             '<small style="padding: 15px;"><em>' + doc.data().category + '</em></small>' +
-
+            
                                             '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
                                             '<span aria-hidden="true">&times;</span>' +
                                             '</button>' +
                                             '</div>' +
                                             '<div class="modal-body">' +
                                             '<small><em>' + doc.data().timepostShow + '</em></small>' +
-                                            '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+                                            '<div class="dimmer"> <h6 id="' + doc.id + 'Linhnotification" class="h6">' + doc.data().timenotification + '</h6></div>' +
                                             '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
                                             // '<pre>' + doc.data().content + '</pre>' +
-
-                                            '<textarea class="form-control" rows="7">' + doc.data().content + '</textarea>' +
-                                            '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
-
+            
+                                            '<textarea id="' + doc.id + 'Linhcontent"class="form-control" rows="7">' + doc.data().content + '</textarea>' +
+                                            '<img id="imgNote' + doc.id + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+            
                                             '</div>' +
                                             '<div class="modal-footer">' +
-                                            '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
-                                            '<button type="button" class="btn btn-primary" onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  data-dismiss="modal">Close</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info" id="' + doc.id + '" onclick="deleteNote()">Delete</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  onclick="save(\'' + doc.id + '\',\'' + doc.data().image + '\')">Save</button>' +
+            
                                             '</div>' +
                                             ' </div>' +
                                             '</div>' +
                                             '</div>'
-
+            
                                         );
-
-                                        var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
+            
+                                        var imgNote = document.getElementById("imgNote" + doc.id);
+                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
                                             imgNote.src = url;
-                                        }).catch(function(error) {});
+                                        }).catch(function (error) { });
                                     } else if (tim2.includes(tim.toLowerCase()) && category_selected == doc.data().category) {
                                         var des = doc.data().content;
                                         var tit = doc.data().name;
@@ -1354,7 +1397,7 @@ function search() {
                                             '</div>' +
                                             '<div  data-toggle="modal" data-target="#exampleModalScrollable' + doc.id + '">' +
                                             '<div class="row">' +
-
+            
                                             '<div class="col-md-7">' +
                                             '<h3 class="h3">' + subTit + '</h3>' +
                                             '</div>' +
@@ -1365,46 +1408,48 @@ function search() {
                                             '<p class="p small ">Content:' + subDes + '</p>' +
                                             '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
                                             '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
-
+            
                                             '</div>' +
-
+            
                                             '</a>' +
-
+            
                                             '<div class="modal fade" id="exampleModalScrollable' + doc.id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">' +
                                             '<div class="modal-dialog modal-dialog-scrollable" role="document">' +
                                             '<div class="modal-content">' +
                                             '<div class="modal-header">' +
                                             '<h1 id="' + doc.id + 'Linhname" class="modal-title">' + doc.data().name + '</h1>' +
                                             '<small style="padding: 15px;"><em>' + doc.data().category + '</em></small>' +
-
+            
                                             '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
                                             '<span aria-hidden="true">&times;</span>' +
                                             '</button>' +
                                             '</div>' +
                                             '<div class="modal-body">' +
                                             '<small><em>' + doc.data().timepostShow + '</em></small>' +
-                                            '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+                                            '<div class="dimmer"> <h6 id="' + doc.id + 'Linhnotification" class="h6">' + doc.data().timenotification + '</h6></div>' +
                                             '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
                                             // '<pre>' + doc.data().content + '</pre>' +
-
-                                            '<textarea class="form-control" rows="7">' + doc.data().content + '</textarea>' +
-                                            '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
-
+            
+                                            '<textarea id="' + doc.id + 'Linhcontent"class="form-control" rows="7">' + doc.data().content + '</textarea>' +
+                                            '<img id="imgNote' + doc.id + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+            
                                             '</div>' +
                                             '<div class="modal-footer">' +
-                                            '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
-                                            '<button type="button" class="btn btn-primary" onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  data-dismiss="modal">Close</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info" id="' + doc.id + '" onclick="deleteNote()">Delete</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  onclick="save(\'' + doc.id + '\',\'' + doc.data().image + '\')">Save</button>' +
+            
                                             '</div>' +
                                             ' </div>' +
                                             '</div>' +
                                             '</div>'
-
+            
                                         );
-
-                                        var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
+            
+                                        var imgNote = document.getElementById("imgNote" + doc.id);
+                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
                                             imgNote.src = url;
-                                        }).catch(function(error) {});
+                                        }).catch(function (error) { });
                                     }
                                 }
                             }
@@ -1427,7 +1472,7 @@ function search() {
                                             '</div>' +
                                             '<div  data-toggle="modal" data-target="#exampleModalScrollable' + doc.id + '">' +
                                             '<div class="row">' +
-
+            
                                             '<div class="col-md-7">' +
                                             '<h3 class="h3">' + subTit + '</h3>' +
                                             '</div>' +
@@ -1438,46 +1483,48 @@ function search() {
                                             '<p class="p small ">Content:' + subDes + '</p>' +
                                             '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
                                             '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
-
+            
                                             '</div>' +
-
+            
                                             '</a>' +
-
+            
                                             '<div class="modal fade" id="exampleModalScrollable' + doc.id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">' +
                                             '<div class="modal-dialog modal-dialog-scrollable" role="document">' +
                                             '<div class="modal-content">' +
                                             '<div class="modal-header">' +
                                             '<h1 id="' + doc.id + 'Linhname" class="modal-title">' + doc.data().name + '</h1>' +
                                             '<small style="padding: 15px;"><em>' + doc.data().category + '</em></small>' +
-
+            
                                             '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
                                             '<span aria-hidden="true">&times;</span>' +
                                             '</button>' +
                                             '</div>' +
                                             '<div class="modal-body">' +
                                             '<small><em>' + doc.data().timepostShow + '</em></small>' +
-                                            '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+                                            '<div class="dimmer"> <h6 id="' + doc.id + 'Linhnotification" class="h6">' + doc.data().timenotification + '</h6></div>' +
                                             '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
                                             // '<pre>' + doc.data().content + '</pre>' +
-
-                                            '<textarea class="form-control" rows="7">' + doc.data().content + '</textarea>' +
-                                            '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
-
+            
+                                            '<textarea id="' + doc.id + 'Linhcontent"class="form-control" rows="7">' + doc.data().content + '</textarea>' +
+                                            '<img id="imgNote' + doc.id + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+            
                                             '</div>' +
                                             '<div class="modal-footer">' +
-                                            '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
-                                            '<button type="button" class="btn btn-primary" onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  data-dismiss="modal">Close</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info" id="' + doc.id + '" onclick="deleteNote()">Delete</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  onclick="save(\'' + doc.id + '\',\'' + doc.data().image + '\')">Save</button>' +
+            
                                             '</div>' +
                                             ' </div>' +
                                             '</div>' +
                                             '</div>'
-
+            
                                         );
-
-                                        var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
+            
+                                        var imgNote = document.getElementById("imgNote" + doc.id);
+                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
                                             imgNote.src = url;
-                                        }).catch(function(error) {});
+                                        }).catch(function (error) { });
                                     } else if (tim == "" && category_selected == doc.data().category) {
                                         var des = doc.data().content;
                                         var tit = doc.data().name;
@@ -1492,7 +1539,7 @@ function search() {
                                             '</div>' +
                                             '<div  data-toggle="modal" data-target="#exampleModalScrollable' + doc.id + '">' +
                                             '<div class="row">' +
-
+            
                                             '<div class="col-md-7">' +
                                             '<h3 class="h3">' + subTit + '</h3>' +
                                             '</div>' +
@@ -1503,46 +1550,48 @@ function search() {
                                             '<p class="p small ">Content:' + subDes + '</p>' +
                                             '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
                                             '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
-
+            
                                             '</div>' +
-
+            
                                             '</a>' +
-
+            
                                             '<div class="modal fade" id="exampleModalScrollable' + doc.id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">' +
                                             '<div class="modal-dialog modal-dialog-scrollable" role="document">' +
                                             '<div class="modal-content">' +
                                             '<div class="modal-header">' +
                                             '<h1 id="' + doc.id + 'Linhname" class="modal-title">' + doc.data().name + '</h1>' +
                                             '<small style="padding: 15px;"><em>' + doc.data().category + '</em></small>' +
-
+            
                                             '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
                                             '<span aria-hidden="true">&times;</span>' +
                                             '</button>' +
                                             '</div>' +
                                             '<div class="modal-body">' +
                                             '<small><em>' + doc.data().timepostShow + '</em></small>' +
-                                            '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+                                            '<div class="dimmer"> <h6 id="' + doc.id + 'Linhnotification" class="h6">' + doc.data().timenotification + '</h6></div>' +
                                             '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
                                             // '<pre>' + doc.data().content + '</pre>' +
-
-                                            '<textarea class="form-control" rows="7">' + doc.data().content + '</textarea>' +
-                                            '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
-
+            
+                                            '<textarea id="' + doc.id + 'Linhcontent"class="form-control" rows="7">' + doc.data().content + '</textarea>' +
+                                            '<img id="imgNote' + doc.id + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+            
                                             '</div>' +
                                             '<div class="modal-footer">' +
-                                            '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
-                                            '<button type="button" class="btn btn-primary" onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  data-dismiss="modal">Close</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info" id="' + doc.id + '" onclick="deleteNote()">Delete</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  onclick="save(\'' + doc.id + '\',\'' + doc.data().image + '\')">Save</button>' +
+            
                                             '</div>' +
                                             ' </div>' +
                                             '</div>' +
                                             '</div>'
-
+            
                                         );
-
-                                        var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
+            
+                                        var imgNote = document.getElementById("imgNote" + doc.id);
+                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
                                             imgNote.src = url;
-                                        }).catch(function(error) {});
+                                        }).catch(function (error) { });
                                     } else if (tim2.includes(tim.toLowerCase()) && category_selected == "") {
                                         var des = doc.data().content;
                                         var tit = doc.data().name;
@@ -1557,7 +1606,7 @@ function search() {
                                             '</div>' +
                                             '<div  data-toggle="modal" data-target="#exampleModalScrollable' + doc.id + '">' +
                                             '<div class="row">' +
-
+            
                                             '<div class="col-md-7">' +
                                             '<h3 class="h3">' + subTit + '</h3>' +
                                             '</div>' +
@@ -1568,46 +1617,48 @@ function search() {
                                             '<p class="p small ">Content:' + subDes + '</p>' +
                                             '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
                                             '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
-
+            
                                             '</div>' +
-
+            
                                             '</a>' +
-
+            
                                             '<div class="modal fade" id="exampleModalScrollable' + doc.id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">' +
                                             '<div class="modal-dialog modal-dialog-scrollable" role="document">' +
                                             '<div class="modal-content">' +
                                             '<div class="modal-header">' +
                                             '<h1 id="' + doc.id + 'Linhname" class="modal-title">' + doc.data().name + '</h1>' +
                                             '<small style="padding: 15px;"><em>' + doc.data().category + '</em></small>' +
-
+            
                                             '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
                                             '<span aria-hidden="true">&times;</span>' +
                                             '</button>' +
                                             '</div>' +
                                             '<div class="modal-body">' +
                                             '<small><em>' + doc.data().timepostShow + '</em></small>' +
-                                            '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+                                            '<div class="dimmer"> <h6 id="' + doc.id + 'Linhnotification" class="h6">' + doc.data().timenotification + '</h6></div>' +
                                             '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
                                             // '<pre>' + doc.data().content + '</pre>' +
-
-                                            '<textarea class="form-control" rows="7">' + doc.data().content + '</textarea>' +
-                                            '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
-
+            
+                                            '<textarea id="' + doc.id + 'Linhcontent"class="form-control" rows="7">' + doc.data().content + '</textarea>' +
+                                            '<img id="imgNote' + doc.id + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+            
                                             '</div>' +
                                             '<div class="modal-footer">' +
-                                            '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
-                                            '<button type="button" class="btn btn-primary" onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  data-dismiss="modal">Close</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info" id="' + doc.id + '" onclick="deleteNote()">Delete</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  onclick="save(\'' + doc.id + '\',\'' + doc.data().image + '\')">Save</button>' +
+            
                                             '</div>' +
                                             ' </div>' +
                                             '</div>' +
                                             '</div>'
-
+            
                                         );
-
-                                        var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
+            
+                                        var imgNote = document.getElementById("imgNote" + doc.id);
+                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
                                             imgNote.src = url;
-                                        }).catch(function(error) {});
+                                        }).catch(function (error) { });
                                     } else if (tim2.includes(tim.toLowerCase()) && category_selected == doc.data().category) {
                                         var des = doc.data().content;
                                         var tit = doc.data().name;
@@ -1622,7 +1673,7 @@ function search() {
                                             '</div>' +
                                             '<div  data-toggle="modal" data-target="#exampleModalScrollable' + doc.id + '">' +
                                             '<div class="row">' +
-
+            
                                             '<div class="col-md-7">' +
                                             '<h3 class="h3">' + subTit + '</h3>' +
                                             '</div>' +
@@ -1633,46 +1684,48 @@ function search() {
                                             '<p class="p small ">Content:' + subDes + '</p>' +
                                             '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
                                             '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
-
+            
                                             '</div>' +
-
+            
                                             '</a>' +
-
+            
                                             '<div class="modal fade" id="exampleModalScrollable' + doc.id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">' +
                                             '<div class="modal-dialog modal-dialog-scrollable" role="document">' +
                                             '<div class="modal-content">' +
                                             '<div class="modal-header">' +
                                             '<h1 id="' + doc.id + 'Linhname" class="modal-title">' + doc.data().name + '</h1>' +
                                             '<small style="padding: 15px;"><em>' + doc.data().category + '</em></small>' +
-
+            
                                             '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
                                             '<span aria-hidden="true">&times;</span>' +
                                             '</button>' +
                                             '</div>' +
                                             '<div class="modal-body">' +
                                             '<small><em>' + doc.data().timepostShow + '</em></small>' +
-                                            '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+                                            '<div class="dimmer"> <h6 id="' + doc.id + 'Linhnotification" class="h6">' + doc.data().timenotification + '</h6></div>' +
                                             '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
                                             // '<pre>' + doc.data().content + '</pre>' +
-
-                                            '<textarea class="form-control" rows="7">' + doc.data().content + '</textarea>' +
-                                            '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
-
+            
+                                            '<textarea id="' + doc.id + 'Linhcontent"class="form-control" rows="7">' + doc.data().content + '</textarea>' +
+                                            '<img id="imgNote' + doc.id + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+            
                                             '</div>' +
                                             '<div class="modal-footer">' +
-                                            '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
-                                            '<button type="button" class="btn btn-primary" onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  data-dismiss="modal">Close</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info" id="' + doc.id + '" onclick="deleteNote()">Delete</button>' +
+                                            '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  onclick="save(\'' + doc.id + '\',\'' + doc.data().image + '\')">Save</button>' +
+            
                                             '</div>' +
                                             ' </div>' +
                                             '</div>' +
                                             '</div>'
-
+            
                                         );
-
-                                        var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
+            
+                                        var imgNote = document.getElementById("imgNote" + doc.id);
+                                        storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
                                             imgNote.src = url;
-                                        }).catch(function(error) {});
+                                        }).catch(function (error) { });
                                     }
                                 }
                             }
@@ -1691,7 +1744,7 @@ function search() {
                                     '</div>' +
                                     '<div  data-toggle="modal" data-target="#exampleModalScrollable' + doc.id + '">' +
                                     '<div class="row">' +
-
+    
                                     '<div class="col-md-7">' +
                                     '<h3 class="h3">' + subTit + '</h3>' +
                                     '</div>' +
@@ -1702,46 +1755,48 @@ function search() {
                                     '<p class="p small ">Content:' + subDes + '</p>' +
                                     '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
                                     '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
-
+    
                                     '</div>' +
-
+    
                                     '</a>' +
-
+    
                                     '<div class="modal fade" id="exampleModalScrollable' + doc.id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">' +
                                     '<div class="modal-dialog modal-dialog-scrollable" role="document">' +
                                     '<div class="modal-content">' +
                                     '<div class="modal-header">' +
                                     '<h1 id="' + doc.id + 'Linhname" class="modal-title">' + doc.data().name + '</h1>' +
                                     '<small style="padding: 15px;"><em>' + doc.data().category + '</em></small>' +
-
+    
                                     '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
                                     '<span aria-hidden="true">&times;</span>' +
                                     '</button>' +
                                     '</div>' +
                                     '<div class="modal-body">' +
                                     '<small><em>' + doc.data().timepostShow + '</em></small>' +
-                                    '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+                                    '<div class="dimmer"> <h6 id="' + doc.id + 'Linhnotification" class="h6">' + doc.data().timenotification + '</h6></div>' +
                                     '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
                                     // '<pre>' + doc.data().content + '</pre>' +
-
-                                    '<textarea class="form-control" rows="7">' + doc.data().content + '</textarea>' +
-                                    '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
-
+    
+                                    '<textarea id="' + doc.id + 'Linhcontent"class="form-control" rows="7">' + doc.data().content + '</textarea>' +
+                                    '<img id="imgNote' + doc.id + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+    
                                     '</div>' +
                                     '<div class="modal-footer">' +
-                                    '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
-                                    '<button type="button" class="btn btn-primary" onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                    '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  data-dismiss="modal">Close</button>' +
+                                    '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info" id="' + doc.id + '" onclick="deleteNote()">Delete</button>' +
+                                    '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  onclick="save(\'' + doc.id + '\',\'' + doc.data().image + '\')">Save</button>' +
+    
                                     '</div>' +
                                     ' </div>' +
                                     '</div>' +
                                     '</div>'
-
+    
                                 );
-
-                                var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
+    
+                                var imgNote = document.getElementById("imgNote" + doc.id);
+                                storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
                                     imgNote.src = url;
-                                }).catch(function(error) {});
+                                }).catch(function (error) { });
                             } else if (tim == "" && category_selected == doc.data().category) {
                                 var des = doc.data().content;
                                 var tit = doc.data().name;
@@ -1756,7 +1811,7 @@ function search() {
                                     '</div>' +
                                     '<div  data-toggle="modal" data-target="#exampleModalScrollable' + doc.id + '">' +
                                     '<div class="row">' +
-
+    
                                     '<div class="col-md-7">' +
                                     '<h3 class="h3">' + subTit + '</h3>' +
                                     '</div>' +
@@ -1767,46 +1822,48 @@ function search() {
                                     '<p class="p small ">Content:' + subDes + '</p>' +
                                     '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
                                     '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
-
+    
                                     '</div>' +
-
+    
                                     '</a>' +
-
+    
                                     '<div class="modal fade" id="exampleModalScrollable' + doc.id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">' +
                                     '<div class="modal-dialog modal-dialog-scrollable" role="document">' +
                                     '<div class="modal-content">' +
                                     '<div class="modal-header">' +
                                     '<h1 id="' + doc.id + 'Linhname" class="modal-title">' + doc.data().name + '</h1>' +
                                     '<small style="padding: 15px;"><em>' + doc.data().category + '</em></small>' +
-
+    
                                     '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
                                     '<span aria-hidden="true">&times;</span>' +
                                     '</button>' +
                                     '</div>' +
                                     '<div class="modal-body">' +
                                     '<small><em>' + doc.data().timepostShow + '</em></small>' +
-                                    '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+                                    '<div class="dimmer"> <h6 id="' + doc.id + 'Linhnotification" class="h6">' + doc.data().timenotification + '</h6></div>' +
                                     '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
                                     // '<pre>' + doc.data().content + '</pre>' +
-
-                                    '<textarea class="form-control" rows="7">' + doc.data().content + '</textarea>' +
-                                    '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
-
+    
+                                    '<textarea id="' + doc.id + 'Linhcontent"class="form-control" rows="7">' + doc.data().content + '</textarea>' +
+                                    '<img id="imgNote' + doc.id + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+    
                                     '</div>' +
                                     '<div class="modal-footer">' +
-                                    '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
-                                    '<button type="button" class="btn btn-primary" onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                    '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  data-dismiss="modal">Close</button>' +
+                                    '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info" id="' + doc.id + '" onclick="deleteNote()">Delete</button>' +
+                                    '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  onclick="save(\'' + doc.id + '\',\'' + doc.data().image + '\')">Save</button>' +
+    
                                     '</div>' +
                                     ' </div>' +
                                     '</div>' +
                                     '</div>'
-
+    
                                 );
-
-                                var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
+    
+                                var imgNote = document.getElementById("imgNote" + doc.id);
+                                storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
                                     imgNote.src = url;
-                                }).catch(function(error) {});
+                                }).catch(function (error) { });
                             } else if (tim2.includes(tim.toLowerCase()) && category_selected == "") {
                                 var des = doc.data().content;
                                 var tit = doc.data().name;
@@ -1821,7 +1878,7 @@ function search() {
                                     '</div>' +
                                     '<div  data-toggle="modal" data-target="#exampleModalScrollable' + doc.id + '">' +
                                     '<div class="row">' +
-
+    
                                     '<div class="col-md-7">' +
                                     '<h3 class="h3">' + subTit + '</h3>' +
                                     '</div>' +
@@ -1832,46 +1889,48 @@ function search() {
                                     '<p class="p small ">Content:' + subDes + '</p>' +
                                     '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
                                     '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
-
+    
                                     '</div>' +
-
+    
                                     '</a>' +
-
+    
                                     '<div class="modal fade" id="exampleModalScrollable' + doc.id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">' +
                                     '<div class="modal-dialog modal-dialog-scrollable" role="document">' +
                                     '<div class="modal-content">' +
                                     '<div class="modal-header">' +
                                     '<h1 id="' + doc.id + 'Linhname" class="modal-title">' + doc.data().name + '</h1>' +
                                     '<small style="padding: 15px;"><em>' + doc.data().category + '</em></small>' +
-
+    
                                     '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
                                     '<span aria-hidden="true">&times;</span>' +
                                     '</button>' +
                                     '</div>' +
                                     '<div class="modal-body">' +
                                     '<small><em>' + doc.data().timepostShow + '</em></small>' +
-                                    '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+                                    '<div class="dimmer"> <h6 id="' + doc.id + 'Linhnotification" class="h6">' + doc.data().timenotification + '</h6></div>' +
                                     '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
                                     // '<pre>' + doc.data().content + '</pre>' +
-
-                                    '<textarea class="form-control" rows="7">' + doc.data().content + '</textarea>' +
-                                    '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
-
+    
+                                    '<textarea id="' + doc.id + 'Linhcontent"class="form-control" rows="7">' + doc.data().content + '</textarea>' +
+                                    '<img id="imgNote' + doc.id + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+    
                                     '</div>' +
                                     '<div class="modal-footer">' +
-                                    '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
-                                    '<button type="button" class="btn btn-primary" onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                    '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  data-dismiss="modal">Close</button>' +
+                                    '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info" id="' + doc.id + '" onclick="deleteNote()">Delete</button>' +
+                                    '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  onclick="save(\'' + doc.id + '\',\'' + doc.data().image + '\')">Save</button>' +
+    
                                     '</div>' +
                                     ' </div>' +
                                     '</div>' +
                                     '</div>'
-
+    
                                 );
-
-                                var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
+    
+                                var imgNote = document.getElementById("imgNote" + doc.id);
+                                storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
                                     imgNote.src = url;
-                                }).catch(function(error) {});
+                                }).catch(function (error) { });
                             } else if (tim2.includes(tim.toLowerCase()) && category_selected == doc.data().category) {
                                 var des = doc.data().content;
                                 var tit = doc.data().name;
@@ -1886,7 +1945,7 @@ function search() {
                                     '</div>' +
                                     '<div  data-toggle="modal" data-target="#exampleModalScrollable' + doc.id + '">' +
                                     '<div class="row">' +
-
+    
                                     '<div class="col-md-7">' +
                                     '<h3 class="h3">' + subTit + '</h3>' +
                                     '</div>' +
@@ -1897,46 +1956,48 @@ function search() {
                                     '<p class="p small ">Content:' + subDes + '</p>' +
                                     '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
                                     '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
-
+    
                                     '</div>' +
-
+    
                                     '</a>' +
-
+    
                                     '<div class="modal fade" id="exampleModalScrollable' + doc.id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">' +
                                     '<div class="modal-dialog modal-dialog-scrollable" role="document">' +
                                     '<div class="modal-content">' +
                                     '<div class="modal-header">' +
                                     '<h1 id="' + doc.id + 'Linhname" class="modal-title">' + doc.data().name + '</h1>' +
                                     '<small style="padding: 15px;"><em>' + doc.data().category + '</em></small>' +
-
+    
                                     '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
                                     '<span aria-hidden="true">&times;</span>' +
                                     '</button>' +
                                     '</div>' +
                                     '<div class="modal-body">' +
                                     '<small><em>' + doc.data().timepostShow + '</em></small>' +
-                                    '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+                                    '<div class="dimmer"> <h6 id="' + doc.id + 'Linhnotification" class="h6">' + doc.data().timenotification + '</h6></div>' +
                                     '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
                                     // '<pre>' + doc.data().content + '</pre>' +
-
-                                    '<textarea class="form-control" rows="7">' + doc.data().content + '</textarea>' +
-                                    '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
-
+    
+                                    '<textarea id="' + doc.id + 'Linhcontent"class="form-control" rows="7">' + doc.data().content + '</textarea>' +
+                                    '<img id="imgNote' + doc.id + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+    
                                     '</div>' +
                                     '<div class="modal-footer">' +
-                                    '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
-                                    '<button type="button" class="btn btn-primary" onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                    '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  data-dismiss="modal">Close</button>' +
+                                    '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info" id="' + doc.id + '" onclick="deleteNote()">Delete</button>' +
+                                    '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  onclick="save(\'' + doc.id + '\',\'' + doc.data().image + '\')">Save</button>' +
+    
                                     '</div>' +
                                     ' </div>' +
                                     '</div>' +
                                     '</div>'
-
+    
                                 );
-
-                                var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
+    
+                                var imgNote = document.getElementById("imgNote" + doc.id);
+                                storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
                                     imgNote.src = url;
-                                }).catch(function(error) {});
+                                }).catch(function (error) { });
                             }
                         }
                     });
@@ -1953,7 +2014,7 @@ function Notificationshow() {
     $('#listNotes').load('show_not.html');
     document.getElementById("pills-done-tab").hidden = true;
     document.getElementById("pills-doing-tab").hidden = true;
-    firebase.auth().onAuthStateChanged(function(user) {
+    firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
 
             var user = firebase.auth().currentUser;
@@ -1961,7 +2022,7 @@ function Notificationshow() {
             if (user != null) {
                 var idUser = firebase.auth().currentUser.uid;
                 var docRef = db.collection('users').doc(idUser);
-                docRef.get().then(function(doc) {
+                docRef.get().then(function (doc) {
 
                     if (doc.exists) {
                         console.log("Document user profile:", doc.data());
@@ -1973,9 +2034,9 @@ function Notificationshow() {
                         $('#DropDownTimezone').val(doc.data().timeZone);
 
                         var imgProfile = document.getElementById("profile-image1");
-                        storageRef.child('userImage/' + doc.data().temp).getDownloadURL().then(function(url) {
+                        storageRef.child('userImage/' + doc.data().temp).getDownloadURL().then(function (url) {
                             imgProfile.src = url;
-                        }).catch(function(error) {
+                        }).catch(function (error) {
                             // Handle any errors
                         });
 
@@ -1983,7 +2044,7 @@ function Notificationshow() {
                         // doc.data() will be undefined in this case
                         console.log("No such document!");
                     }
-                }).catch(function(error) {
+                }).catch(function (error) {
                     console.log("Error getting document:", error);
                     alert(error);
                 });
@@ -2009,7 +2070,7 @@ function Notificationshow() {
                                         '</div>' +
                                         '<div  data-toggle="modal" data-target="#exampleModalScrollable' + doc.id + '">' +
                                         '<div class="row">' +
-
+        
                                         '<div class="col-md-7">' +
                                         '<h3 class="h3">' + subTit + '</h3>' +
                                         '</div>' +
@@ -2020,46 +2081,48 @@ function Notificationshow() {
                                         '<p class="p small ">Content:' + subDes + '</p>' +
                                         '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
                                         '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
-
+        
                                         '</div>' +
-
+        
                                         '</a>' +
-
+        
                                         '<div class="modal fade" id="exampleModalScrollable' + doc.id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">' +
                                         '<div class="modal-dialog modal-dialog-scrollable" role="document">' +
                                         '<div class="modal-content">' +
                                         '<div class="modal-header">' +
                                         '<h1 id="' + doc.id + 'Linhname" class="modal-title">' + doc.data().name + '</h1>' +
                                         '<small style="padding: 15px;"><em>' + doc.data().category + '</em></small>' +
-
+        
                                         '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
                                         '<span aria-hidden="true">&times;</span>' +
                                         '</button>' +
                                         '</div>' +
                                         '<div class="modal-body">' +
                                         '<small><em>' + doc.data().timepostShow + '</em></small>' +
-                                        '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+                                        '<div class="dimmer"> <h6 id="' + doc.id + 'Linhnotification" class="h6">' + doc.data().timenotification + '</h6></div>' +
                                         '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
                                         // '<pre>' + doc.data().content + '</pre>' +
-
-                                        '<textarea class="form-control" rows="7">' + doc.data().content + '</textarea>' +
-                                        '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
-
+        
+                                        '<textarea id="' + doc.id + 'Linhcontent"class="form-control" rows="7">' + doc.data().content + '</textarea>' +
+                                        '<img id="imgNote' + doc.id + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+        
                                         '</div>' +
                                         '<div class="modal-footer">' +
-                                        '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
-                                        '<button type="button" class="btn btn-primary" onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                        '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  data-dismiss="modal">Close</button>' +
+                                        '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info" id="' + doc.id + '" onclick="deleteNote()">Delete</button>' +
+                                        '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  onclick="save(\'' + doc.id + '\',\'' + doc.data().image + '\')">Save</button>' +
+        
                                         '</div>' +
                                         ' </div>' +
                                         '</div>' +
                                         '</div>'
-
+        
                                     );
-
-                                    var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                    storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
+        
+                                    var imgNote = document.getElementById("imgNote" + doc.id);
+                                    storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
                                         imgNote.src = url;
-                                    }).catch(function(error) {});
+                                    }).catch(function (error) { });
                                 } else if (category_selected == doc.data().category) {
                                     $("#name_notes").append(
                                         '<a id="del' + doc.id + '" data-id="' + doc.id + '" class="card3 a "  >' +
@@ -2070,7 +2133,7 @@ function Notificationshow() {
                                         '</div>' +
                                         '<div  data-toggle="modal" data-target="#exampleModalScrollable' + doc.id + '">' +
                                         '<div class="row">' +
-
+        
                                         '<div class="col-md-7">' +
                                         '<h3 class="h3">' + subTit + '</h3>' +
                                         '</div>' +
@@ -2081,46 +2144,48 @@ function Notificationshow() {
                                         '<p class="p small ">Content:' + subDes + '</p>' +
                                         '<div class="dimmer"> <h6 class="h6">' + doc.data().timepostShow + '</h6></div>' +
                                         '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
-
+        
                                         '</div>' +
-
+        
                                         '</a>' +
-
+        
                                         '<div class="modal fade" id="exampleModalScrollable' + doc.id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">' +
                                         '<div class="modal-dialog modal-dialog-scrollable" role="document">' +
                                         '<div class="modal-content">' +
                                         '<div class="modal-header">' +
                                         '<h1 id="' + doc.id + 'Linhname" class="modal-title">' + doc.data().name + '</h1>' +
                                         '<small style="padding: 15px;"><em>' + doc.data().category + '</em></small>' +
-
+        
                                         '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
                                         '<span aria-hidden="true">&times;</span>' +
                                         '</button>' +
                                         '</div>' +
                                         '<div class="modal-body">' +
                                         '<small><em>' + doc.data().timepostShow + '</em></small>' +
-                                        '<div class="dimmer"> <h6 class="h6">' + doc.data().timenotification + '</h6></div>' +
+                                        '<div class="dimmer"> <h6 id="' + doc.id + 'Linhnotification" class="h6">' + doc.data().timenotification + '</h6></div>' +
                                         '<small ><em id="' + doc.id + 'Linhlocation"> ' + doc.data().location + '</em></small><br>' +
                                         // '<pre>' + doc.data().content + '</pre>' +
-
-                                        '<textarea class="form-control" rows="7">' + doc.data().content + '</textarea>' +
-                                        '<img id="imgNote' + doc.data().name + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
-
+        
+                                        '<textarea id="' + doc.id + 'Linhcontent"class="form-control" rows="7">' + doc.data().content + '</textarea>' +
+                                        '<img id="imgNote' + doc.id + '" style="width: 50% ; height: 50%; margin-left: 25%"></img>' +
+        
                                         '</div>' +
                                         '<div class="modal-footer">' +
-                                        '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
-                                        '<button type="button" class="btn btn-primary" onclick="save(\'' + doc.id + '\')">Save</button>' +
+                                        '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  data-dismiss="modal">Close</button>' +
+                                        '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info" id="' + doc.id + '" onclick="deleteNote()">Delete</button>' +
+                                        '<button type="button" style="width: 70px;height: 50px;" class="btn btn-info"  onclick="save(\'' + doc.id + '\',\'' + doc.data().image + '\')">Save</button>' +
+        
                                         '</div>' +
                                         ' </div>' +
                                         '</div>' +
                                         '</div>'
-
+        
                                     );
-
-                                    var imgNote = document.getElementById("imgNote" + doc.data().name);
-                                    storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function(url) {
+        
+                                    var imgNote = document.getElementById("imgNote" + doc.id);
+                                    storageRef.child('NoteImage/' + doc.data().image + '').getDownloadURL().then(function (url) {
                                         imgNote.src = url;
-                                    }).catch(function(error) {});
+                                    }).catch(function (error) { });
                                 }
                             }
                         }
