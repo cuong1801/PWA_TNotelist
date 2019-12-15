@@ -108,7 +108,7 @@
                 <textarea id="NewNotes_content" type="ghichu" name="message" placeholder="What are you doing..." style="width:auto; height:auto;"></textarea>
                 <br>
                 <div class="custom-file">
-                    <input type="file" value="upload" id="fileButton" multiple/>
+                    <input type="file" value="upload" id="fileButton" multiple />
                 </div>
                 <br>
                 <div class="form-row row">
@@ -247,11 +247,14 @@
                                     </select>
                                     <div class="clearfix"></div>
                                     <div class="bot-border"></div>
-                                    <div class="col-sm-2 col-xs-2 tital">
-                                        <button onclick="saveIn()" class="btn btn-primary" data-dismiss="modal">Update</button>
-                                    </div>
-                                    <div class="col-sm-2 col-xs-2 tital">
-                                        <button class="btn btn-primary" data-dismiss="modal">Close</button>
+                                    <div class="row">
+                                        <div class="col-sm-2 col-xs-2 tital">
+                                            <button onclick="saveIn()" type="button" style="width: 70px;height: 50px;" class="btn btn-outline-info" data-dismiss="modal">Update</button>
+                                        </div>
+                                        <div class="col-sm-4 col-xs-2 tital">
+                                            <button data-dismiss="modal" onclick="saveIn()" type="button" style="width: 70px;height: 50px;" class="btn btn-outline-info">Close</button>
+
+                                        </div>
                                     </div>
                                     <!-- /.box-body -->
                                 </div>
@@ -411,7 +414,7 @@
     <script src="task/task.js"></script>
     <script src="homepage/js/ShowNoteCard.js"></script>
     <script src="homepage/js/list-menu.js"></script>
-    <!-- <script src="app.js"></script> -->
+    <script src="app.js"></script>
 </body>
 
 </html>
